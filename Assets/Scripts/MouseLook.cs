@@ -98,10 +98,13 @@ public class MouseLook : MonoBehaviour
                 //float rotation x is equal to our y axis plus the mouse input on the Mouse X times our x sensitivity
                 //euler angles in degrees relative to the parents transform rotation
                 float rotX = transform.localEulerAngles.y + Input.GetAxis("Mouse X") * sensX; //sensX is the speed that we will move along mouseX axis
-                                                                                              //our rotation Y is plus equals  our mouse input for Mouse Y times Y sensitivity
-                rotY += Input.GetAxis("Mouse Y") * sensY;
+
+                //our rotation Y is plus equals  our mouse input for Mouse Y times Y sensitivity
+                rotY += Input.GetAxis("Mouse Y") * sensY; 
+                
                 //the rotation Y is clamped using Mathf and we are clamping the y rotation to the Y min and Y max
                 rotY = Mathf.Clamp(rotY, minY, maxY);
+
                 //transform our local position to the nex vector3 rotaion - y rotaion on the x axis and x rotation on the y axis. Need to invert Y to have Up actually be Up
                 transform.localEulerAngles = new Vector3(-rotY, rotX, 0);
                 break;
@@ -145,7 +148,7 @@ what animation plays, where the hands sit on the weapon, how many hands sit on t
     //MouseX
     //MouseY
 //Creating an enum out side the script and making it public means it can be asessed anywhere in any script with out reference
-public enum RotationAxis //numbers associated with contents go from 0 upwards in order of variable introduced
+public enum Rot //numbers associated with contents go from 0 upwards in order of variable introduced
 {
     MouseXandY,
     MouseX,
