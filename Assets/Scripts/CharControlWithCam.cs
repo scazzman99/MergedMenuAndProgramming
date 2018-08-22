@@ -17,14 +17,17 @@ public class CharControlWithCam : MonoBehaviour {
     [Space(10)]
     public Camera mainCam;
     public RotationAxis rotAxis;
+    //Sensitivity vars will control the speed at which cam/player rotation will happen
     public float sensX = 10f;
     public float sensY = 10f;
+    //Min and max Y will be used to clamp the angle at which the camera can tilt vertically
     public float minY = -60f;
     public float maxY = 60f;
+    //Empty variable used to store input for Y movement of camera
     public float rotY;
     #endregion
 
-
+    #region Start&Update
     // Use this for initialization
     void Start () {
         playerController = GetComponent<CharacterController>();
@@ -36,6 +39,8 @@ public class CharControlWithCam : MonoBehaviour {
         PlayerMovement();
         CameraMovement();
 	}
+
+    #endregion
 
     #region Player&CameraMovement
 
