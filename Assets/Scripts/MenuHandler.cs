@@ -68,6 +68,7 @@ public class MenuHandler : MonoBehaviour
             dirLight = GameObject.FindGameObjectWithTag("DirLight").GetComponent<Light>(); //etc but found a tag instead
 
             volSlider.value = mainAudio.volume; //value of the slider is equal to the audio level of mainAudio.
+            brightSlider.value = dirLight.intensity;
             
             return false;
         }
@@ -81,7 +82,12 @@ public class MenuHandler : MonoBehaviour
 
     public void Brightness()
     {
-
+        dirLight.intensity = brightSlider.value;
     } //slider to control brightness
+
+    public void AmbientBrightness()
+    {
+        
+    }
 
 }
