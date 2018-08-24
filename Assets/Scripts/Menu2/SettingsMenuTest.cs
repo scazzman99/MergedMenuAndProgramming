@@ -9,6 +9,7 @@ public class SettingsMenuTest : MonoBehaviour {
     public AudioMixer mixer;
     Resolution[] resolutions;
     public Dropdown resolutionDropdown;
+    public Light dirLight;
 
     private void Start()
     {
@@ -61,6 +62,11 @@ public class SettingsMenuTest : MonoBehaviour {
 
     public void SetBrightness(float brightness)
     {
-        
+        dirLight.intensity = brightness;
+    }
+
+    public void SetAmbientLighting(float ambient)
+    {
+        RenderSettings.ambientIntensity = ambient;
     }
 }
