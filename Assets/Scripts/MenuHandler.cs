@@ -11,9 +11,10 @@ public class MenuHandler : MonoBehaviour
     #region Variables
     public GameObject mainMenu, optionsMenu; //declare 2 gameObjects for later definition (likely from the inspector)
     public bool showOptions; //no defined value means this will default to FALSE
-    public Slider volSlider, brightSlider;
+    public Slider volSlider, brightSlider, ambientSlider;
     public AudioSource mainAudio; //for our audio
     public Light dirLight; //for the brightness
+    
     #endregion
 
     private void Start()
@@ -64,11 +65,14 @@ public class MenuHandler : MonoBehaviour
             optionsMenu.SetActive(true);
             volSlider = GameObject.Find("VolumeSlider").GetComponent<Slider>(); //volSlider is of slider type, so the gameobject return value must the Slider component of the retrieved GameObject!
             brightSlider = GameObject.Find("BrightnessSlider").GetComponent<Slider>();
+            ambientSlider = GameObject.Find("AmbientSlider").GetComponent<Slider>();
             mainAudio = GameObject.Find("MainMusic").GetComponent<AudioSource>(); //do the same but for audio source
             dirLight = GameObject.FindGameObjectWithTag("DirLight").GetComponent<Light>(); //etc but found a tag instead
 
             volSlider.value = mainAudio.volume; //value of the slider is equal to the audio level of mainAudio.
             brightSlider.value = dirLight.intensity;
+            ambientSlider.value = RenderSettings.ambientIntensity;
+
             
             return false;
         }
@@ -87,7 +91,7 @@ public class MenuHandler : MonoBehaviour
 
     public void AmbientBrightness()
     {
-        
+        RenderSettings.ambientIntensity = ambientSlider.value;
     }
 
 }
