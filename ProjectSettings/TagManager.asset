@@ -8,6 +8,8 @@ TagManager:
   - CHEST
   - ITEM
   - DirLight
+  - Potion
+  - Fountain
   layers:
   - Default
   - TransparentFX

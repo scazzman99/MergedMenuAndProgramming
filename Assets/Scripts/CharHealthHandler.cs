@@ -34,6 +34,9 @@ public class CharHealthHandler : MonoBehaviour
     public float maxHP;
     public float currentHP;
     public float damageHP;
+    public bool isHealing;
+    public float tempHealingVal;
+    public float healRate;
 
     #endregion
 
@@ -118,6 +121,11 @@ public class CharHealthHandler : MonoBehaviour
         CheckDamageHP();
         if (isAlive)
         {
+            if (isHealing)
+            {
+                CheckHealing();
+            }
+
             CheckMana();
             CheckStamina();
         }
@@ -193,15 +201,23 @@ public class CharHealthHandler : MonoBehaviour
     }
     #endregion
 
-    private void ReduceDamageBar(){
-        //this will reduce the damageBar at a fast rate but will ensure it does so over time
-        damageHP -= 10 * Time.deltaTime;
+    
+
+    private void HealOverTime(float healRate)
+    {
+            //add the heal value to the current HP value over a time
+            currentHP += healRate * Time.deltaTime;
     }
 
-    private void HealOverTime(float healValue)
+    public void GetHealValue(float healVal, int time)
     {
-        //add the heal value to the current HP value over a time
-        currentHP += healValue * Time.deltaTime;
+        tempHealingVal = healVal + currentHP;
+        if(tempHealingVal > maxHP)
+        {
+            tempHealingVal = maxHP;
+        }
+        healRate = healVal / time;
+        isHealing = true;
     }
 
     #region StatSetandCheckFunctions
@@ -284,8 +300,8 @@ public class CharHealthHandler : MonoBehaviour
             //if the damage HP is less than the current health
             if (damageHP > currentHP)
             {
-                //reduce the damage bar at a set rate
-                ReduceDamageBar();
+                //reduce the damage bar at a set rate. Coroutine lets me delay when the actual damage bar starts moving
+                StartCoroutine(ReduceDamageBar());
 
                 //if we have overshot our HP somehow, make damage bar equal to the currentHP
                 if (damageHP < currentHP)
@@ -299,6 +315,44 @@ public class CharHealthHandler : MonoBehaviour
                 damageHP = currentHP;
             }
         }
+    }
+
+    private void CheckHealing()
+    {
+        if (!tempHealingVal.Equals(null))
+        {
+            if(currentHP < tempHealingVal)
+            {
+                HealOverTime(healRate);
+                if(currentHP >= tempHealingVal)
+                {
+                    currentHP = tempHealingVal;
+                    tempHealingVal = 0;
+                    isHealing = false;
+                }
+            }
+
+        }
+
+    }
+    
+
+
+
+    #endregion
+
+    #region CoRoutines
+    IEnumerator ReduceDamageBar()
+    {
+        //this will reduce the damageBar at a fast rate but will ensure it does so over time
+        yield return new WaitForSeconds(0.5f);
+        damageHP -= 10 * Time.deltaTime;
+    }
+
+    IEnumerator GiveSetHPAtInterval(float HP)
+    {
+        currentHP += HP;
+        yield return new WaitForSeconds(1);
     }
 
     #endregion
