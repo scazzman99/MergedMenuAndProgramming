@@ -36,7 +36,7 @@ public class MenuHandler : MonoBehaviour
     {
         mainAudio = GameObject.Find("MainMusic").GetComponent<AudioSource>(); //do the same but for audio source
         dirLight = GameObject.FindGameObjectWithTag("DirLight").GetComponent<Light>(); //etc but found a tag instead
-        
+       
 
         #region SetUpKeys
         forward = (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("Forward", "W")); //forward is where we will save the string. the second string must match KEYCODE!
@@ -98,7 +98,7 @@ public class MenuHandler : MonoBehaviour
             brightSlider = GameObject.Find("BrightnessSlider").GetComponent<Slider>();
             ambientSlider = GameObject.Find("AmbientSlider").GetComponent<Slider>();
             resDropdown = GameObject.Find("ResDropdown").GetComponent<Dropdown>();
-            resDropDownSetup();
+            ResDropDownSetup();
 
 
             volSlider.value = mainAudio.volume; //value of the slider is equal to the audio level of mainAudio.
@@ -128,7 +128,7 @@ public class MenuHandler : MonoBehaviour
 
     public void Resolutions()
     {
-        resIndex = resDropdown.value;
+       
         Resolution currentRes = resolutions[resIndex];
         Screen.SetResolution(currentRes.width, currentRes.height, isFullscreen);
     }
@@ -146,7 +146,7 @@ public class MenuHandler : MonoBehaviour
 
     }
 
-    public void resDropDownSetup()
+    public void ResDropDownSetup()
     {
         List<string> resOptions = new List<string>();
         resolutions = Screen.resolutions;
@@ -157,6 +157,10 @@ public class MenuHandler : MonoBehaviour
             string option = resolutions[i].width + "x" + resolutions[i].height;
             resOptions.Add(option);
 
+            if(resolutions[i].width == Screen.currentResolution.width && resolutions[i].height == Screen.currentResolution.height)
+            {
+                resIndex = i;
+            }
         }
         resDropdown.AddOptions(resOptions);
         resDropdown.value = resIndex;
@@ -189,5 +193,17 @@ public class MenuHandler : MonoBehaviour
            forward = KeyCode.None;
            forwardText.text = forward.ToString();
         }
+    }
+
+    public void FullscreenRedun()
+    {
+        isFullscreen = !isFullscreen;
+        Screen.fullScreen = isFullscreen;
+        Debug.Log(isFullscreen);
+    }
+
+    public void Fullscreen(bool isFullscreen)
+    {
+        Screen.fullScreen = isFullscreen;
     }
 }

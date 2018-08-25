@@ -16,12 +16,38 @@ public class CharHealthHandler : MonoBehaviour
     public CharacterController playerController;
     #endregion
 
+    [Header("Attributes/Stats")]
+
+    #region BaseStatModifiers
+    public int constitution;
+    public int strength;
+    public int dexterity;
+    public int intelligence;
+    public int wisdom;
+    public int charisma;
+    #endregion
+
+
     [Header("Health")]
     #region Health
     //Plyaer current health and max health
     public float maxHP;
     public float currentHP;
+    public float damageHP;
 
+    #endregion
+
+    [Header("Mana")]
+    #region Mana
+    public float maxMana;
+    public float currentMana;
+    #endregion
+
+    [Header("Stamina")]
+    #region Stamina
+    public float maxStamina;
+    public float currentStamina;
+    public float staminaLossRate = 8f;
     #endregion
 
     [Header("Levels and Exp")]
@@ -36,8 +62,16 @@ public class CharHealthHandler : MonoBehaviour
     #region MiniMap
     //render texture for the mini map that we need to connect to a camera
     public RenderTexture miniMap;
+   
+    #endregion
+
+    [Header("Bars")]
+    #region Bars
     public GUIStyle healthBar;
     public GUIStyle expBar;
+    public GUIStyle damageBar;
+    public GUIStyle manaBar;
+    public GUIStyle staminaBar;
     #endregion
 
     #endregion
@@ -50,8 +84,9 @@ public class CharHealthHandler : MonoBehaviour
     //connect the Character Controller to the controller variable
     private void Start()
     {
-        maxHP = 100f;
+        SetStatValues();
         currentHP = maxHP;
+        damageHP = maxHP;
         isAlive = true;
         maxExp = 60;
         playerController = GameObject.Find("Player").GetComponent<CharacterController>();
@@ -77,36 +112,16 @@ public class CharHealthHandler : MonoBehaviour
     #endregion
 
     #region LateUpdate
-    //if our current health is greater than our maximum amount of health
-    //then our current health is equal to the max health
-    //if our current health is less than 0 or we are not alive
-    //current health equals 0
-    //if the player is alive
-    //and our health is less than or equal to 0
-    //alive is false
-    //controller is turned off
-
     private void LateUpdate()
     {
-        if(currentHP > maxHP)
+        CheckHP();
+        CheckDamageHP();
+        if (isAlive)
         {
-            currentHP = maxHP;
+            CheckMana();
+            CheckStamina();
         }
-
-        if(currentHP < 0)
-        {
-            currentHP = 0;
-            Debug.Log("if less than 0 = 0");
-        }
-
-        if(isAlive && currentHP == 0)
-        {
-            
-            isAlive = false;
-            playerController.enabled = false; //disables the player controller
-            Debug.Log("Disable on death");
-            
-        }
+      
     }
     #endregion
 
@@ -133,20 +148,159 @@ public class CharHealthHandler : MonoBehaviour
             }
         }
 
-        GUI.Box(new Rect(scrW * 6, scrH * 0.25f, scrW * 4, scrH * 0.5f), "");
+        #region BackgroundRects
+
         //background bar will sit in the same place at the main HP bar, and this main HP bar will change with hp MAX. e.g. 10hp and 15hp max fit into same bar
+        GUI.Box(new Rect(scrW * 6, scrH * 0.25f, scrW * 4, scrH * 0.5f), "");
         
+        //GUI Box on screen for the experience background
+        GUI.Box(new Rect(scrW * 6, scrH * 0.75f, scrW * 4, scrH * 0.25f), "");
+
+        //GUI box for Mana bar background
+        GUI.Box(new Rect(scrW, scrH * 0.25f, scrW * 4, scrH * 0.375f), "");
+
+        //GUI box for Stamina bar background
+        GUI.Box(new Rect(scrW, scrH * 0.625f, scrW * 4, scrH * 0.375f), "");
+
+        #endregion
+
+        #region BarInitialisation
+
+        //Health bar to sit behind main health and show on damage
+        GUI.Box(new Rect(scrW * 6, scrH * 0.25f, damageHP * (scrW * 4) / maxHP, scrH * 0.5f), "", damageBar);
+
         //GUI Box for current health that moves in same place as the background bar
         //current Health divided by the posistion on screen and timesed by the total max health
         GUI.Box(new Rect(scrW * 6, scrH * 0.25f, currentHP * (scrW * 4) / maxHP, scrH * 0.5f), "", healthBar);
 
-        //GUI Box on screen for the experience background
+        //Mana bar set up over its background
+        GUI.Box(new Rect(scrW, scrH * 0.25f, scrW * 4, scrH * 0.375f), "", manaBar);
+
+        //Stamina bar set up over its background
+        GUI.Box(new Rect(scrW, scrH * 0.625f, scrW * 4, scrH * 0.375f), "", staminaBar);
+
+        #endregion
+
+
+
+
         //GUI Box for current experience that moves in same place as the background bar
-        GUI.Box(new Rect(scrW * 6, scrH * 0.75f, scrW * 4, scrH * 0.25f), "");
+
+
         GUI.Box(new Rect(scrW * 6, scrH * 0.75f, currentExp* (scrW * 4) / maxExp, scrH * 0.25f), "", expBar);
 
         GUI.DrawTexture(new Rect(scrW*13.75f, scrH*0.25f, scrW*2, scrH*2), miniMap);
     }
+    #endregion
+
+    private void ReduceDamageBar(){
+        //this will reduce the damageBar at a fast rate but will ensure it does so over time
+        damageHP -= 10 * Time.deltaTime;
+    }
+
+    private void HealOverTime(float healValue)
+    {
+        //add the heal value to the current HP value over a time
+        currentHP += healValue * Time.deltaTime;
+    }
+
+    #region StatSetandCheckFunctions
+
+    private void SetStatValues()
+    {
+        maxHP = 50f + 7 * constitution;
+        maxStamina = 50f + 7 * dexterity;
+        maxMana = 50f + 7 * wisdom;
+    }
+
+    private void CheckMana()
+    {
+        //if current mana is greater than our max
+        if (currentMana > maxMana)
+        {
+            //set current mana to our max
+            currentMana = maxMana;
+        }
+
+        //if current mana has dropped beneath 0
+        if (currentMana < 0)
+        {
+            //set current mana to 0
+            currentMana = 0;
+        }
+
+    }
+
+    private void CheckStamina()
+    {
+        //exactly the same as CheckMana()
+        if (currentStamina > maxStamina)
+        {
+            currentStamina = maxStamina;
+        }
+
+        if (currentStamina < 0)
+        {
+            currentStamina = 0;
+        }
+    }
+
+    private void CheckHP()
+    {
+        //if the current HP is greater than our max
+        if (currentHP > maxHP)
+        {
+            //set our current HP to our max HP
+            currentHP = maxHP;
+        }
+
+        //if the current HP is less than 0
+        if (currentHP < 0)
+        {
+            //set the current HP to 0
+            currentHP = 0;
+            Debug.Log("if less than 0 = 0");
+        }
+
+        //if the current HP is 0 AND the player is alive
+        if (isAlive && currentHP == 0)
+        {
+            //set player alive to false
+            isAlive = false;
+            //disable the player controller
+            playerController.enabled = false;
+            Debug.Log("Disable on death");
+
+        }
+     
+    }
+
+    private void CheckDamageHP()
+    {
+        //move damageBar to the healths current value over time
+        //if damage HP is not equal to our current HP
+        if (damageHP != currentHP)
+        {
+            //if the damage HP is less than the current health
+            if (damageHP > currentHP)
+            {
+                //reduce the damage bar at a set rate
+                ReduceDamageBar();
+
+                //if we have overshot our HP somehow, make damage bar equal to the currentHP
+                if (damageHP < currentHP)
+                {
+                    damageHP = currentHP;
+                }
+            }
+            else
+            {
+                //update damage bar immediately if being healed
+                damageHP = currentHP;
+            }
+        }
+    }
+
     #endregion
 }
 
