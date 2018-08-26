@@ -26,9 +26,10 @@ public class MenuHandler : MonoBehaviour
     public KeyCode forward, backward, left, right, jump, crouch, sprint, interact; //will remember the default keys
     [Header("KeyBind References")]
     public Text forwardText; //currently attached thru inspector
-    public Text backwardText, leftText, rightText, jumpText, crouchText, sprintText, interactText; //make this an array or something later
-    public Text[] inputTexts;
-
+    public Text backwardText, leftText, rightText, jumpText, crouchText, sprintText, interactText; //make this an array or something late
+    public Dictionary<string, KeyCode> myKeyCodes;
+    public List<KeyCode> keyCodeVals;
+    public Text[] buttonTexts;
     
     #endregion
 
@@ -36,19 +37,45 @@ public class MenuHandler : MonoBehaviour
     {
         mainAudio = GameObject.Find("MainMusic").GetComponent<AudioSource>(); //do the same but for audio source
         dirLight = GameObject.FindGameObjectWithTag("DirLight").GetComponent<Light>(); //etc but found a tag instead
-       
+        myKeyCodes = new Dictionary<string, KeyCode>();
+
 
         #region SetUpKeys
+        
         forward = (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("Forward", "W")); //forward is where we will save the string. the second string must match KEYCODE!
         backward = (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("Backward", "S"));//first part of these converts a string to an Enum
         left = (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("Left", "A"));
-        right = (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("Right", "D"));
-        jump = (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("Jump", "Space"));
-        crouch = (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("Crouch", "LeftControl"));
-        sprint = (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("Sprint", "LeftShift"));
+        right = (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("Right", "D"));        
+        jump = (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("Jump", "Space"));      
+        crouch = (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("Crouch", "LeftControl"));       
+        sprint = (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("Sprint", "LeftShift"));       
         interact = (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("Interact", "E"));
+
+        keyCodeVals.Add(forward);
+        keyCodeVals.Add(backward);
+        keyCodeVals.Add(left);
+        keyCodeVals.Add(right);
+        keyCodeVals.Add(jump);
+        keyCodeVals.Add(crouch);
+        keyCodeVals.Add(sprint);
+        keyCodeVals.Add(interact);
+        Debug.Log(keyCodeVals.Capacity);
+        Debug.Log(keyCodeVals[0]);
+
+        //These dictionary keys will match the gameobject name of the button for reference in GetButtonName()
         
         
+        myKeyCodes["ForwardButton"] = keyCodeVals[0];
+        myKeyCodes["BackwardButton"] = keyCodeVals[1];
+        myKeyCodes["LeftButton"] = keyCodeVals[2];
+        myKeyCodes["RightButton"] = keyCodeVals[3];
+        myKeyCodes["JumpButton"] = keyCodeVals[4];
+        myKeyCodes["CrouchButton"] = keyCodeVals[5];
+        myKeyCodes["SprintButton"] = keyCodeVals[6];
+        myKeyCodes["InteractButton"] = keyCodeVals[7];
+        
+
+
         #endregion
 
     }
@@ -78,6 +105,7 @@ public class MenuHandler : MonoBehaviour
     {
         OptionToggle();
     }
+
     bool OptionToggle() // doesnt need to be public or private
     {
         if (showOptions) // This is equivilant to showOptions == true
@@ -111,6 +139,8 @@ public class MenuHandler : MonoBehaviour
         //additionally, we would maybe not return the value of showOptions (possibly on the off chance we are calling and returning a null value for a bool return type!)
     }
 
+    #region OptionsFunctions
+
     public void Volume() //slider to control volume
     {
         mainAudio.volume = volSlider.value; //set the audio level to whatever the value of the slider is
@@ -135,14 +165,15 @@ public class MenuHandler : MonoBehaviour
 
     public void Save()
     {
-        PlayerPrefs.SetString("Forward", forward.ToString()); //file name then the value it will hold!
-        PlayerPrefs.SetString("Backward", backward.ToString());
-        PlayerPrefs.SetString("Left", left.ToString());
-        PlayerPrefs.SetString("Right", right.ToString());
-        PlayerPrefs.SetString("Jump", jump.ToString());
-        PlayerPrefs.SetString("Crouch", crouch.ToString());
-        PlayerPrefs.SetString("Sprint", sprint.ToString());
-        PlayerPrefs.SetString("Interact", interact.ToString());
+        PlayerPrefs.SetString("Forward", keyCodeVals[0].ToString()); //file name then the value it will hold!
+        PlayerPrefs.SetString("Backward", keyCodeVals[1].ToString());
+        PlayerPrefs.SetString("Left", keyCodeVals[2].ToString());
+        PlayerPrefs.SetString("Right", keyCodeVals[3].ToString());
+        PlayerPrefs.SetString("Jump", keyCodeVals[4].ToString());
+        PlayerPrefs.SetString("Crouch", keyCodeVals[5].ToString());
+        PlayerPrefs.SetString("Sprint", keyCodeVals[6].ToString());
+        PlayerPrefs.SetString("Interact", keyCodeVals[7].ToString());
+        
 
     }
 
@@ -171,29 +202,122 @@ public class MenuHandler : MonoBehaviour
     private void OnGUI() //make this better later
     {
         Event e = Event.current;
-        if(forward == KeyCode.None)
+        
+
+        if (e.isKey) //if the event is a key
+        {
+            for (int i = 0; i < keyCodeVals.Capacity; i++) //cycle thru list of keyBinds
+            {
+                if (keyCodeVals[i] == KeyCode.None) //if the key bind is equal to nothing
+                {
+                    Debug.Log("Keycode: " + e.keyCode);
+                    if (!keyCodeVals.Contains(e.keyCode)) //if there are NO other keybinds with our event keycode
+                    {
+                        keyCodeVals[i] = e.keyCode; //set the keycode to the event keycode
+                        holdingKey = KeyCode.None; //set the holding key to nothing
+                        buttonTexts[i].text = keyCodeVals[i].ToString(); //make the buttons text the string value of our current keycode
+                        RefreshDictionary();
+                    }
+                    else
+                    {
+                        keyCodeVals[i] = holdingKey;
+                        holdingKey = KeyCode.None;
+                        buttonTexts[i].text = keyCodeVals[i].ToString();
+                    }
+                    Debug.Log(myKeyCodes["ForwardButton"] + " from loop");
+                    break;
+                }
+            }
+        }
+       
+        
+        /*
+        if (forward == KeyCode.None)
         {
             Debug.Log("Keycode: " + e.keyCode);
-            if(!(e.keyCode == backward || e.keyCode == left || e.keyCode == right || e.keyCode == jump || e.keyCode == crouch || e.keyCode == sprint || e.keyCode == interact))
+            if (!(e.keyCode == backward || e.keyCode == left || e.keyCode == right || e.keyCode == jump || e.keyCode == crouch || e.keyCode == sprint || e.keyCode == interact))
             {
                 forward = e.keyCode;
                 holdingKey = KeyCode.None;
                 forwardText.text = forward.ToString();
-                
+
+            }
+            else
+            {
+                forward = holdingKey;
+                holdingKey = KeyCode.None;
+                forwardText.text = forward.ToString();
+            }
+        }
+        */
+
+
+        
+    }
+
+    #region KeyBind Functions
+    public void Forward()
+    {
+        if(!keyCodeVals.Contains(KeyCode.None))
+        {
+            holdingKey = keyCodeVals[0];
+           keyCodeVals[0] = KeyCode.None;
+           forwardText.text = keyCodeVals[0].ToString();
+        }
+    }
+
+    public void Backward()
+    {
+        if(!(forward == KeyCode.None || left == KeyCode.None) || right == KeyCode.None || jump == KeyCode.None || crouch == KeyCode.None ||
+            sprint == KeyCode.None || interact == KeyCode.None)
+        {
+            holdingKey = backward;
+            backward = KeyCode.None;
+            backwardText.text = backward.ToString();
+        }
+    }
+
+    public void GetButtonName()
+    {
+        string buttonName = EventSystem.current.currentSelectedGameObject.name; //grabs the name of the button that called this function. Button will selected game object in EventSys. This is how to get the name of the thing that called a button
+        Debug.Log(buttonName);
+        if (buttonName != null && myKeyCodes.ContainsKey(buttonName)) //if the button name is in the dictionary as a key
+        {
+            KeyCode keyBind = myKeyCodes[buttonName]; //set a KeyCode to the dictionary value of the button name
+            Debug.Log(keyBind);
+            SetKey(keyBind);
+
+        }
+    }//gets the name of the button pushed and sends the keycode of that button to SetKey
+
+    void SetKey(KeyCode keyBind)
+    {
+        int index = -1; //use this to see if we picked anything up
+        for (int i = 0; i < keyCodeVals.Capacity; i++)
+        {
+            if (keyBind == keyCodeVals[i]) //if keybind is the same as keycode at index i
+            {
+                index = i; //set index to i
+                break; //leave the for loop
+            }
+        }
+
+        if (index != -1) //if we found anything earlier
+        {
+            if (!keyCodeVals.Contains(KeyCode.None)) //if the list of keycodes DOES NOT contain keycode None
+            {
+                holdingKey = keyCodeVals[index]; //set holding key to our keycode
+                keyCodeVals[index] = KeyCode.None; //set our key code in the list to none
+                buttonTexts[index].text = keyCodeVals[index].ToString(); //set the button text to the string of our new keycode
             }
         }
     }
 
-    public void Forward()
-    {
-        if(!(backward == KeyCode.None || left == KeyCode.None) || right == KeyCode.None || jump == KeyCode.None || crouch == KeyCode.None ||
-            sprint == KeyCode.None || interact == KeyCode.None)
-        {
-            holdingKey = forward;
-           forward = KeyCode.None;
-           forwardText.text = forward.ToString();
-        }
-    }
+
+
+
+
+    #endregion
 
     public void FullscreenRedun()
     {
@@ -205,5 +329,22 @@ public class MenuHandler : MonoBehaviour
     public void Fullscreen(bool isFullscreen)
     {
         Screen.fullScreen = isFullscreen;
+        
+    }
+
+    #endregion
+
+    void RefreshDictionary() //refreshes the dictionary values if the list has changed
+    {
+        myKeyCodes["ForwardButton"] = keyCodeVals[0];
+        myKeyCodes["BackwardButton"] = keyCodeVals[1];
+        myKeyCodes["LeftButton"] = keyCodeVals[2];
+        myKeyCodes["RightButton"] = keyCodeVals[3];
+        myKeyCodes["JumpButton"] = keyCodeVals[4];
+        myKeyCodes["CrouchButton"] = keyCodeVals[5];
+        myKeyCodes["SprintButton"] = keyCodeVals[6];
+        myKeyCodes["InteractButton"] = keyCodeVals[7];
     }
 }
+
+
