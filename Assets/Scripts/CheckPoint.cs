@@ -13,20 +13,50 @@ public class CheckPoint : MonoBehaviour
     #endregion
 
     #region Start
-    //the character handler is the component attached to our player
-    #region Check if we have Key
-    //if we have a save key called SpawnPoint
-    //then our checkpoint is equal to the game object that is named after our save file
-    //our transform.position is equal to that of the checkpoint
-    #endregion
+    
+    private void Start()
+    {
+        //the character handler is the component attached to our player
+        healthHandler = GetComponent<CharHealthHandler>();
+
+        //if we have a save key called SpawnPoint
+        if (PlayerPrefs.HasKey("SpawnPoint"))
+        {
+            //then our checkpoint is equal to the game object that is named after our save file
+            //remember to get saves we use PlayerPrefs.GetString
+            checkpointCurrent = GameObject.Find(PlayerPrefs.GetString("SpawnPoint"));
+
+            //our transform.position is equal to that of the checkpoint
+            transform.position = checkpointCurrent.transform.position;
+            
+        }
+
+    }
     #endregion
 
     #region Update
     //if our characters health is less than or equal to 0
-    //our transform.position is equal to that of the checkpoint
+    
     //our characters health is equal to full health
     //character is alive
     //characters controller is active		
+
+    private void Update()
+    {
+        //already checked for less than in other class
+        if(healthHandler.currentHP == 0)
+        {
+            //our transform.position is equal to that of the checkpoint
+            transform.position = checkpointCurrent.transform.position;
+
+            //set player hp to max
+            healthHandler.currentHP = healthHandler.maxHP;
+
+            //set player to alive and reactivate them
+            healthHandler.isAlive = true;
+            healthHandler.playerController.enabled = true;
+        }
+    }
     #endregion
 
     #region OnTriggerEnter
@@ -38,7 +68,11 @@ public class CheckPoint : MonoBehaviour
     {
         if (other.CompareTag("CheckPoint"))
         {
+            //checkpoint is equal to the object with collided with
             checkpointCurrent = other.gameObject;
+            
+            //save the checkpoint position to spawnpoint using SetString. Want other's gameobject name
+            PlayerPrefs.SetString("SpawnPoint", checkpointCurrent.name);
         }
     }
     #endregion

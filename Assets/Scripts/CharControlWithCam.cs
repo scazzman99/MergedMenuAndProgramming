@@ -9,6 +9,8 @@ public class CharControlWithCam : MonoBehaviour {
     [Header("MainMovementVariables")]
     [Space(10)]
     public float speed = 5f;
+    public float crouchSpeed = 2f;
+    public float sprintSpeed = 8f;
     public float grav = 20f;
     public float jumpSpeed = 8f;
     public CharacterController playerController;
@@ -54,8 +56,20 @@ public class CharControlWithCam : MonoBehaviour {
             //actually use this vector to transform coordinates of player
             moveVector = transform.TransformDirection(moveVector);
 
-            //increase the rate at which the player travels
-            moveVector *= speed;
+            if (Input.GetKey(KeyCode.C))
+            {
+                moveVector *= crouchSpeed;
+            }
+            else if (Input.GetKey(KeyCode.LeftShift))
+            {
+                moveVector *= sprintSpeed;
+            }
+            else
+            {
+                //increase the rate at which the player travels
+                moveVector *= speed;
+            }
+
 
             if (Input.GetButton("Jump"))
             {
@@ -75,9 +89,9 @@ public class CharControlWithCam : MonoBehaviour {
         switch (rotAxis)
         {
             case RotationAxis.MouseXandY:
-                
+                //TIME.DELTATIME IS A FLOAT AND WILL SEVERLY HURT ROTATION, THERFORE USE TIMESCALE WHICH IS EITHER 1 OR 0
                 //Y rotation is just y axis of mouse multiply sens in Y direction
-                rotY += Input.GetAxis("Mouse Y") * sensY;
+                rotY += Input.GetAxis("Mouse Y") * sensY * Time.timeScale;
 
                 //takes the Y rotation and ensures that it cannot exceed our max and min y rotations, simulating a neck.
                 rotY = Mathf.Clamp(rotY, minY, maxY);
@@ -86,7 +100,8 @@ public class CharControlWithCam : MonoBehaviour {
                 mainCam.transform.localEulerAngles = new Vector3(-rotY, 0f, 0f);
 
                 //rotate the player around the Y axis according to their input from X axis and sensX
-                playerController.transform.Rotate(0f, Input.GetAxis("Mouse X") * sensX, 0f);
+                playerController.transform.Rotate(0f, Input.GetAxis("Mouse X") * sensX * Time.timeScale, 0f);
+               
                 
 
                 
