@@ -5,6 +5,7 @@ using UnityEngine;
 public class Pause : MonoBehaviour {
 
     public bool paused;
+    public Canvas pauseCanvas;
 	// Use this for initialization
 	void Start () {
         Time.timeScale = 1; //sets the time scale to 1, so the game runs at 'regular' speed
@@ -19,12 +20,15 @@ public class Pause : MonoBehaviour {
             {
                 Time.timeScale = 1;
                 paused = false; //with time scale back at 1 and the menu gone, the gmae will continue to play
-                
+                pauseCanvas.gameObject.SetActive(paused);
+                GameObject.Find("PauseHandler").GetComponent<PauseMenu>().pauseMenu.SetActive(true);
+                GameObject.Find("PauseHandler").GetComponent<PauseMenu>().settingsMenu.SetActive(false);
+                GameObject.Find("PauseHandler").GetComponent<PauseMenu>().isOptions = false;
             } else
             {
                 Time.timeScale = 0;
                 paused = true; //with time scale set to 0, we can pull up the pause menu and stop the world.
-                
+                pauseCanvas.gameObject.SetActive(paused);
             }
         }
 	}

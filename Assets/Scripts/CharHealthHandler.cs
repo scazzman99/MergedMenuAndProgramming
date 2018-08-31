@@ -3,10 +3,10 @@ using System.Collections;
 //this script can be found in the Component section under the option Character Set Up 
 //Character Handler
 
-    //CHALLENGE: HEAL OVER TIME AND DROPPING HEALTH BAR
+//CHALLENGE: HEAL OVER TIME AND DROPPING HEALTH BAR
 
-    [AddComponentMenu("RPG controls and stuff")]
-public class CharHealthHandler : MonoBehaviour 
+[AddComponentMenu("RPG controls and stuff")]
+public class CharHealthHandler : MonoBehaviour
 {
     #region Variables
 
@@ -68,7 +68,7 @@ public class CharHealthHandler : MonoBehaviour
     #region MiniMap
     //render texture for the mini map that we need to connect to a camera
     public RenderTexture miniMap;
-   
+
     #endregion
 
     [Header("Bars")]
@@ -79,7 +79,7 @@ public class CharHealthHandler : MonoBehaviour
     public GUIStyle manaBar;
     public GUIStyle staminaBar;
     #endregion
-
+    public Pause pauseMenu;
     #endregion
 
     #region Start
@@ -93,6 +93,8 @@ public class CharHealthHandler : MonoBehaviour
         SetStatValues();
         currentHP = maxHP;
         damageHP = maxHP;
+        currentStamina = maxStamina;
+        currentMana = maxMana;
         isAlive = true;
         maxExp = 60;
         playerController = GameObject.Find("Player").GetComponent<CharacterController>();
@@ -123,7 +125,7 @@ public class CharHealthHandler : MonoBehaviour
         }
         */
 
-        if(currentExp >= maxExp)
+        if (currentExp >= maxExp)
         {
             currentExp -= maxExp;
             playerLvl++;
@@ -136,7 +138,7 @@ public class CharHealthHandler : MonoBehaviour
     #region LateUpdate
     private void LateUpdate()
     {
-       
+
         CheckHP();
         CheckDamageHP();
         if (isAlive)
@@ -150,7 +152,7 @@ public class CharHealthHandler : MonoBehaviour
             CheckMana();
             CheckStamina();
         }
-      
+
     }
     #endregion
 
@@ -159,8 +161,8 @@ public class CharHealthHandler : MonoBehaviour
     //scrW - 16
     //scrH - 9
     //GUI Box on screen for the healthbar background
- 
-    
+
+
     //current experience divided by the posistion on screen and timesed by the total max experience
     //GUI Draw Texture on the screen that has the mini map render texture attached
 
@@ -168,58 +170,62 @@ public class CharHealthHandler : MonoBehaviour
     {
         float scrW = Screen.width / 16;
         float scrH = Screen.height / 9;
-
-        for (int x = 0; x < 16; x++)
+        if (!pauseMenu.paused)
         {
-            for (int y = 0; y < 9; y++)
+            for (int x = 0; x < 16; x++)
             {
-                GUI.Box(new Rect(scrW * x, scrH * y, scrW, scrH), "");
+                for (int y = 0; y < 9; y++)
+                {
+                    GUI.Box(new Rect(scrW * x, scrH * y, scrW, scrH), "");
+                }
             }
+
+            #region BackgroundRects
+
+            //background bar will sit in the same place at the main HP bar, and this main HP bar will change with hp MAX. e.g. 10hp and 15hp max fit into same bar
+            GUI.Box(new Rect(scrW * 6, scrH * 0.25f, scrW * 4, scrH * 0.5f), "");
+
+            //GUI Box on screen for the experience background
+            GUI.Box(new Rect(scrW * 6, scrH * 0.75f, scrW * 4, scrH * 0.25f), "");
+
+            //GUI box for Mana bar background
+            GUI.Box(new Rect(scrW, scrH * 0.25f, scrW * 4, scrH * 0.375f), "");
+
+            //GUI box for Stamina bar background
+            GUI.Box(new Rect(scrW, scrH * 0.625f, scrW * 4, scrH * 0.375f), "");
+
+            #endregion
+
+            #region BarInitialisation
+
+            //Health bar to sit behind main health and show on damage
+            GUI.Box(new Rect(scrW * 6, scrH * 0.25f, damageHP * (scrW * 4) / maxHP, scrH * 0.5f), "", damageBar);
+
+            //GUI Box for current health that moves in same place as the background bar
+            //current Health divided by the posistion on screen and timesed by the total max health
+            GUI.Box(new Rect(scrW * 6, scrH * 0.25f, currentHP * (scrW * 4) / maxHP, scrH * 0.5f), "", healthBar);
+
+            //Mana bar set up over its background
+            GUI.Box(new Rect(scrW, scrH * 0.25f, currentMana * (scrW * 4) / maxMana, scrH * 0.375f), "", manaBar);
+
+            //Stamina bar set up over its background
+            GUI.Box(new Rect(scrW, scrH * 0.625f, currentStamina * (scrW * 4) / maxStamina, scrH * 0.375f), "", staminaBar);
+
+            GUI.Box(new Rect(scrW * 6, scrH * 0.75f, currentExp * (scrW * 4) / maxExp, scrH * 0.25f), "", expBar);
+
+            #endregion
+
+            #region MiniMap
+
+            GUI.DrawTexture(new Rect(scrW * 13.75f, scrH * 0.25f, scrW * 2, scrH * 2), miniMap);
+
+            #endregion
         }
 
-        #region BackgroundRects
-
-        //background bar will sit in the same place at the main HP bar, and this main HP bar will change with hp MAX. e.g. 10hp and 15hp max fit into same bar
-        GUI.Box(new Rect(scrW * 6, scrH * 0.25f, scrW * 4, scrH * 0.5f), "");
-        
-        //GUI Box on screen for the experience background
-        GUI.Box(new Rect(scrW * 6, scrH * 0.75f, scrW * 4, scrH * 0.25f), "");
-
-        //GUI box for Mana bar background
-        GUI.Box(new Rect(scrW, scrH * 0.25f, scrW * 4, scrH * 0.375f), "");
-
-        //GUI box for Stamina bar background
-        GUI.Box(new Rect(scrW, scrH * 0.625f, scrW * 4, scrH * 0.375f), "");
-
-        #endregion
-
-        #region BarInitialisation
-
-        //Health bar to sit behind main health and show on damage
-        GUI.Box(new Rect(scrW * 6, scrH * 0.25f, damageHP * (scrW * 4) / maxHP, scrH * 0.5f), "", damageBar);
-
-        //GUI Box for current health that moves in same place as the background bar
-        //current Health divided by the posistion on screen and timesed by the total max health
-        GUI.Box(new Rect(scrW * 6, scrH * 0.25f, currentHP * (scrW * 4) / maxHP, scrH * 0.5f), "", healthBar);
-
-        //Mana bar set up over its background
-        GUI.Box(new Rect(scrW, scrH * 0.25f, scrW * 4, scrH * 0.375f), "", manaBar);
-
-        //Stamina bar set up over its background
-        GUI.Box(new Rect(scrW, scrH * 0.625f, scrW * 4, scrH * 0.375f), "", staminaBar);
-
-        GUI.Box(new Rect(scrW * 6, scrH * 0.75f, currentExp * (scrW * 4) / maxExp, scrH * 0.25f), "", expBar);
-
-        #endregion
-        
-        #region MiniMap
-
-        GUI.DrawTexture(new Rect(scrW * 13.75f, scrH * 0.25f, scrW * 2, scrH * 2), miniMap);
-
-        #endregion
 
 
-        
+
+
 
     }
     #endregion
@@ -228,19 +234,24 @@ public class CharHealthHandler : MonoBehaviour
 
     private void HealOverTime(float healRate)
     {
-            //add the heal value to the current HP value over a time
-            currentHP += healRate * Time.deltaTime;
+        //add the heal value to the current HP value over a time
+        currentHP += healRate * Time.deltaTime;
     }
 
     public void GetHealValue(float healVal, int time)
     {
         tempHealingVal = healVal + currentHP;
-        if(tempHealingVal > maxHP)
+        if (tempHealingVal > maxHP)
         {
             tempHealingVal = maxHP;
         }
         healRate = healVal / time;
         isHealing = true;
+    }
+
+    public void DrainStamina()
+    {
+        currentStamina -= 8f * Time.deltaTime;
     }
 
     #region StatSetandCheckFunctions
@@ -273,6 +284,12 @@ public class CharHealthHandler : MonoBehaviour
     private void CheckStamina()
     {
         //exactly the same as CheckMana()
+        bool isSprinting = GetComponent<CharControlWithCam>().isSprinting;
+        if (isSprinting)
+        {
+            DrainStamina();
+        }
+
         if (currentStamina > maxStamina)
         {
             currentStamina = maxStamina;
@@ -311,7 +328,7 @@ public class CharHealthHandler : MonoBehaviour
             Debug.Log("Disable on death");
 
         }
-     
+
     }
 
     private void CheckDamageHP()
@@ -320,12 +337,12 @@ public class CharHealthHandler : MonoBehaviour
         //if damage HP is not equal to our current HP
         if (damageHP != currentHP)
         {
-            
+
             //if the damage HP is less than the current health
             if (damageHP > currentHP)
             {
                 //reduce the damage bar at a set rate. Coroutine lets me delay when the actual damage bar starts moving
-                
+
                 StartCoroutine(ReduceDamageBar());
 
                 //stop natural regen
@@ -337,47 +354,48 @@ public class CharHealthHandler : MonoBehaviour
                 {
                     damageHP = currentHP;
 
-                } 
-                
-                
+                }
+
+
             }
             else
             {
                 //update damage bar immediately if being healed
                 damageHP = currentHP;
-                
-                
+
+
             }
         }
-       
+
     }
 
     private void CheckHealing()
     {
         //if there is no damage being taken and natural healing is on
-       /* if(isDamaging == false && isNaturalHeal)
-        {
-            HealOverTime(naturalRegenRate);
-            if (currentHP > maxHP)
-            {
-                currentHP = maxHP;
-                isNaturalHeal = false;
-            }
-        }
-        */
+        /* if(isDamaging == false && isNaturalHeal)
+         {
+             HealOverTime(naturalRegenRate);
+             if (currentHP > maxHP)
+             {
+                 currentHP = maxHP;
+                 isNaturalHeal = false;
+             }
+         }
+         */
 
         if (!tempHealingVal.Equals(0f))
         {
-            if(currentHP < tempHealingVal)
+            if (currentHP < tempHealingVal)
             {
                 HealOverTime(healRate);
-                if(currentHP >= tempHealingVal)
+                if (currentHP >= tempHealingVal)
                 {
                     currentHP = tempHealingVal;
                     tempHealingVal = 0f;
                     isHealing = false;
                 }
-            } else
+            }
+            else
             {
                 isHealing = false;
             }
@@ -385,7 +403,7 @@ public class CharHealthHandler : MonoBehaviour
         }
 
     }
-    
+
 
 
 
@@ -399,20 +417,20 @@ public class CharHealthHandler : MonoBehaviour
         damageHP -= 20 * Time.deltaTime;
     }
 
-   /* IEnumerator GiveSetHPAtInterval(float HP)
-    {
-        currentHP += HP;
-        yield return new WaitForSeconds(1);
-    }
-    */
+    /* IEnumerator GiveSetHPAtInterval(float HP)
+     {
+         currentHP += HP;
+         yield return new WaitForSeconds(1);
+     }
+     */
 
-   /* IEnumerator WaitForRegen()
-    {
-        yield return new WaitForSeconds(2);
-        isDamaging = false;
-        isNaturalHeal = true;
-    }
-    */
+    /* IEnumerator WaitForRegen()
+     {
+         yield return new WaitForSeconds(2);
+         isDamaging = false;
+         isNaturalHeal = true;
+     }
+     */
 
     #endregion
 }

@@ -13,6 +13,7 @@ public class CharControlWithCam : MonoBehaviour {
     public float sprintSpeed = 8f;
     public float grav = 20f;
     public float jumpSpeed = 8f;
+    public bool isSprinting;
     public CharacterController playerController;
     private Vector3 moveVector = Vector3.zero;
     [Header("CameraVariables")]
@@ -60,9 +61,20 @@ public class CharControlWithCam : MonoBehaviour {
             {
                 moveVector *= crouchSpeed;
             }
+
             else if (Input.GetKey(KeyCode.LeftShift))
             {
-                moveVector *= sprintSpeed;
+                //if the player still has stamina
+                if (GetComponent<CharHealthHandler>().currentStamina != 0)
+                {
+                    moveVector *= sprintSpeed;
+                    isSprinting = true;
+                } else
+                {
+                    isSprinting = false;
+                    //move at default speed
+                    moveVector *= speed;
+                }
             }
             else
             {
@@ -81,7 +93,13 @@ public class CharControlWithCam : MonoBehaviour {
         moveVector.y -= grav * Time.deltaTime;
 
         //ensures that if game pauses the player will stop
-        playerController.Move(moveVector * Time.deltaTime); 
+        playerController.Move(moveVector * Time.deltaTime);
+
+        //if player stops sprinting set to false so HealthHandler stops draining stamina
+        if (Input.GetKeyUp(KeyCode.LeftShift))
+        {
+            isSprinting = false;
+        }
     }
 
     void CameraMovement()

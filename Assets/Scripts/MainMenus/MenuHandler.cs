@@ -48,6 +48,7 @@ public class MenuHandler : MonoBehaviour
         crouch = (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("Crouch", "LeftControl"));       
         sprint = (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("Sprint", "LeftShift"));       
         interact = (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("Interact", "E"));
+        
 
         keyCodeVals.Add(forward);
         keyCodeVals.Add(backward);
