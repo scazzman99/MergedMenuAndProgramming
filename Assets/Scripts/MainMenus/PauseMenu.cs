@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+[AddComponentMenu("Skyrim Revengence/Menu/PauseMenu")]
 
 public class PauseMenu : MonoBehaviour {
 

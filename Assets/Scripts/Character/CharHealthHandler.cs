@@ -5,7 +5,7 @@ using System.Collections;
 
 //CHALLENGE: HEAL OVER TIME AND DROPPING HEALTH BAR
 
-[AddComponentMenu("RPG controls and stuff")]
+[AddComponentMenu("Skyrim Revengence/FirstPerson/CharHealthHandler")]
 public class CharHealthHandler : MonoBehaviour
 {
     #region Variables
@@ -342,12 +342,12 @@ public class CharHealthHandler : MonoBehaviour
             if (damageHP > currentHP)
             {
                 //reduce the damage bar at a set rate. Coroutine lets me delay when the actual damage bar starts moving
-
+                StopCoroutine(WaitForRegen());
                 StartCoroutine(ReduceDamageBar());
 
                 //stop natural regen
-                //isDamaging = true;
-                //isNaturalHeal = false;
+                isDamaging = true;
+                isNaturalHeal = false;
 
                 //if we have overshot our HP somehow, make damage bar equal to the currentHP
                 if (damageHP < currentHP)
@@ -366,13 +366,14 @@ public class CharHealthHandler : MonoBehaviour
 
             }
         }
+        
 
     }
 
     private void CheckHealing()
     {
         //if there is no damage being taken and natural healing is on
-        /* if(isDamaging == false && isNaturalHeal)
+        if(isDamaging == false && isNaturalHeal)
          {
              HealOverTime(naturalRegenRate);
              if (currentHP > maxHP)
@@ -381,7 +382,7 @@ public class CharHealthHandler : MonoBehaviour
                  isNaturalHeal = false;
              }
          }
-         */
+         
 
         if (!tempHealingVal.Equals(0f))
         {
@@ -424,13 +425,13 @@ public class CharHealthHandler : MonoBehaviour
      }
      */
 
-    /* IEnumerator WaitForRegen()
+     IEnumerator WaitForRegen()
      {
          yield return new WaitForSeconds(2);
          isDamaging = false;
          isNaturalHeal = true;
      }
-     */
+     
 
     #endregion
 }
