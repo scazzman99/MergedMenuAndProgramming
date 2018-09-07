@@ -97,7 +97,7 @@ public class CharHealthHandler : MonoBehaviour
         currentMana = maxMana;
         isAlive = true;
         maxExp = 60;
-        playerController = GameObject.Find("Player").GetComponent<CharacterController>();
+        playerController = GameObject.FindGameObjectWithTag("Player").GetComponent<CharacterController>();
     }
     #endregion
 

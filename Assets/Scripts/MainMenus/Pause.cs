@@ -24,11 +24,15 @@ public class Pause : MonoBehaviour {
                 GameObject.Find("PauseHandler").GetComponent<PauseMenu>().pauseMenu.SetActive(true);
                 GameObject.Find("PauseHandler").GetComponent<PauseMenu>().settingsMenu.SetActive(false);
                 GameObject.Find("PauseHandler").GetComponent<PauseMenu>().isOptions = false;
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
             } else
             {
                 Time.timeScale = 0;
                 paused = true; //with time scale set to 0, we can pull up the pause menu and stop the world.
                 pauseCanvas.gameObject.SetActive(paused);
+                Cursor.lockState = CursorLockMode.Confined;
+                Cursor.visible = true;
             }
         }
 	}
