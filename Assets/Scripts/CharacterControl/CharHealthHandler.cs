@@ -338,7 +338,7 @@ public class CharHealthHandler : MonoBehaviour
         if (damageHP != currentHP)
         {
 
-            //if the damage HP is less than the current health
+            //if the damage HP is more than the current health
             if (damageHP > currentHP)
             {
                 //reduce the damage bar at a set rate. Coroutine lets me delay when the actual damage bar starts moving
@@ -365,6 +365,10 @@ public class CharHealthHandler : MonoBehaviour
 
 
             }
+        }
+        else
+        {
+            StartCoroutine(WaitForRegen());
         }
         
 
