@@ -20,6 +20,7 @@ public class PauseMenu : MonoBehaviour {
     public KeyCode holdingKey;
     public Text forwardTxt, backwardTxt, leftTxt, rightTxt, jumpTxt, crouchTxt, sprintTxt, interactTxt;
     private GameObject currentKey;
+    public Pause pauseF;
 	// Use this for initialization
 	void Start () {
         myKeys.Add("Forward", (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("Forward", "W")));
@@ -40,6 +41,7 @@ public class PauseMenu : MonoBehaviour {
         sprintTxt.text = myKeys["Sprint"].ToString();
         interactTxt.text = myKeys["Interact"].ToString();
 
+        pauseF = GetComponent<Pause>();
 
     }
 	
@@ -127,8 +129,16 @@ public class PauseMenu : MonoBehaviour {
 
     public void ResumeGame()
     {
-        
+        Time.timeScale = 1;
+        pauseF.paused = false; //with time scale back at 1 and the menu gone, the gmae will continue to play
+        pauseF.pauseCanvas.gameObject.SetActive(pauseF.paused);
+        GameObject.Find("PauseHandler").GetComponent<PauseMenu>().pauseMenu.SetActive(true);
+        GameObject.Find("PauseHandler").GetComponent<PauseMenu>().settingsMenu.SetActive(false);
+        GameObject.Find("PauseHandler").GetComponent<PauseMenu>().isOptions = false;
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
+    
 
     public void ReturnToMain()
     {

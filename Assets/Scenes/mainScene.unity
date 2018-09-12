@@ -416,7 +416,13 @@ Prefab:
       propertyPath: pauseCanvas
       value: 
       objectReference: {fileID: 2015203197}
-    m_RemovedComponents: []
+    - target: {fileID: 114072809608286496, guid: d42a78784564dbf40a3b7aac1a6bb9a3,
+        type: 2}
+      propertyPath: pauseMenu
+      value: 
+      objectReference: {fileID: 953292264}
+    m_RemovedComponents:
+    - {fileID: 114900615678240660, guid: d42a78784564dbf40a3b7aac1a6bb9a3, type: 2}
   m_SourcePrefab: {fileID: 100100000, guid: d42a78784564dbf40a3b7aac1a6bb9a3, type: 2}
   m_IsPrefabAsset: 0
 --- !u!1 &114509629
@@ -2420,6 +2426,7 @@ GameObject:
   m_Component:
   - component: {fileID: 953292263}
   - component: {fileID: 953292262}
+  - component: {fileID: 953292264}
   m_Layer: 0
   m_Name: PauseHandler
   m_TagString: Untagged
@@ -2457,6 +2464,7 @@ MonoBehaviour:
   crouchTxt: {fileID: 1183118047}
   sprintTxt: {fileID: 1399736970}
   interactTxt: {fileID: 195673691}
+  pauseF: {fileID: 0}
 --- !u!4 &953292263
 Transform:
   m_ObjectHideFlags: 0
@@ -2470,6 +2478,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &953292264
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 953292261}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eaaf00a2c50778c4fb0e507253e235b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  paused: 0
+  pauseCanvas: {fileID: 2015203197}
 --- !u!1 &986488750
 GameObject:
   m_ObjectHideFlags: 0
@@ -2944,7 +2965,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 953292262}
-        m_MethodName: 
+        m_MethodName: ResumeGame
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
