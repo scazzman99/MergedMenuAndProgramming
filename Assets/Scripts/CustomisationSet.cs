@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 //you will need to change Scenes
 public class CustomisationSet : MonoBehaviour {
 
@@ -31,10 +32,18 @@ public class CustomisationSet : MonoBehaviour {
     //base stats affect the character
     public int str;
     public int dex, chr, con, intel, wis;
+    public int strMin, dexMin, chrMin, conMin, intelMin, wisMin;
     //points used to increase our stats
     public int points = 10;
     public CharacterClass charClass = CharacterClass.Barbarian;
     public Renderer character;
+    [Header("DropDown")]
+    public Vector2 scrollArea;
+    public int dropIndex;
+    public bool showDrop;
+    [Header("StatPanel")]
+    public bool statPanel;
+    
     #endregion
 
     #region Start
@@ -103,6 +112,8 @@ public class CustomisationSet : MonoBehaviour {
         SetTexture("Eyes", 0);
         SetTexture("Armour", 0);
         SetTexture("Clothes", 0);
+        GetClass(0);
+
 
 
     }
@@ -155,7 +166,7 @@ public class CustomisationSet : MonoBehaviour {
             case "Eyes":
                 index = eyesIndex;
                 max = eyesMax;
-                textures = mouth.ToArray();
+                textures = eyes.ToArray();
                 matIndex = 4;
                 break;
 
@@ -258,125 +269,366 @@ public class CustomisationSet : MonoBehaviour {
        float scrH = Screen.height / 9;
        int order = 0;
 
-        #region Skin
-
-        //GUI button on the left of the screen with the contence <
-        if (GUI.Button(new Rect(0.25f * scrW, scrH + order * (0.5f * scrH), 0.5f * scrW, 0.5f * scrH), "<"))
+        if (!statPanel)
         {
-            //when pressed the button will run SetTexture and grab the Skin Material and move the texture index in the direction  -1
-            SetTexture("Skin", -1);
+            #region Skin
+
+            //GUI button on the left of the screen with the contence <
+            if (GUI.Button(new Rect(0.25f * scrW, scrH + order * (0.5f * scrH), 0.5f * scrW, 0.5f * scrH), "<"))
+            {
+                //when pressed the button will run SetTexture and grab the Skin Material and move the texture index in the direction  -1
+                SetTexture("Skin", -1);
+            }
+
+            //GUI Box or Lable on the left of the screen with the contence Skin
+            GUI.Button(new Rect(0.75f * scrW, scrH + order * (0.5f * scrH), 1f * scrW, 0.5f * scrH), "Skin");
+
+            //GUI button on the left of the screen with the contence >
+            if (GUI.Button(new Rect(1.75f * scrW, scrH + order * (0.5f * scrH), 0.5f * scrW, 0.5f * scrH), ">"))
+            {
+                //when pressed the button will run SetTexture and grab the Skin Material and move the texture index in the direction  1
+                SetTexture("Skin", 1);
+            }
+
+            //move down the screen with the int using ++ each grouping of GUI elements are moved using this
+            #endregion
+
+            order++;
+
+            #region Hair
+            if (GUI.Button(new Rect(0.25f * scrW, scrH + order * (0.5f * scrH), 0.5f * scrW, 0.5f * scrH), "<"))
+            {
+                //when pressed the button will run SetTexture and grab the Hair Material and move the texture index in the direction  -1
+                SetTexture("Hair", -1);
+            }
+
+            GUI.Button(new Rect(0.75f * scrW, scrH + order * (0.5f * scrH), 1f * scrW, 0.5f * scrH), "Hair");
+
+            if (GUI.Button(new Rect(1.75f * scrW, scrH + order * (0.5f * scrH), 0.5f * scrW, 0.5f * scrH), ">"))
+            {
+                //when pressed the button will run SetTexture and grab the Skin Material and move the texture index in the direction  1
+                SetTexture("Hair", 1);
+            }
+            #endregion
+
+            order++;
+
+            #region Mouth
+            if (GUI.Button(new Rect(0.25f * scrW, scrH + order * (0.5f * scrH), 0.5f * scrW, 0.5f * scrH), "<"))
+            {
+                //when pressed the button will run SetTexture and grab the Hair Material and move the texture index in the direction  -1
+                SetTexture("Mouth", -1);
+            }
+
+            GUI.Button(new Rect(0.75f * scrW, scrH + order * (0.5f * scrH), 1f * scrW, 0.5f * scrH), "Mouth");
+
+            if (GUI.Button(new Rect(1.75f * scrW, scrH + order * (0.5f * scrH), 0.5f * scrW, 0.5f * scrH), ">"))
+            {
+                //when pressed the button will run SetTexture and grab the Skin Material and move the texture index in the direction  1
+                SetTexture("Mouth", 1);
+            }
+            #endregion
+
+            order++;
+
+            #region Eyes
+            if (GUI.Button(new Rect(0.25f * scrW, scrH + order * (0.5f * scrH), 0.5f * scrW, 0.5f * scrH), "<"))
+            {
+                //when pressed the button will run SetTexture and grab the Hair Material and move the texture index in the direction  -1
+                SetTexture("Eyes", -1);
+            }
+
+            GUI.Button(new Rect(0.75f * scrW, scrH + order * (0.5f * scrH), 1f * scrW, 0.5f * scrH), "Eyes");
+
+            if (GUI.Button(new Rect(1.75f * scrW, scrH + order * (0.5f * scrH), 0.5f * scrW, 0.5f * scrH), ">"))
+            {
+                //when pressed the button will run SetTexture and grab the Skin Material and move the texture index in the direction  1
+                SetTexture("Eyes", 1);
+            }
+            #endregion
+
+            order++;
+
+            #region Armour
+            if (GUI.Button(new Rect(0.25f * scrW, scrH + order * (0.5f * scrH), 0.5f * scrW, 0.5f * scrH), "<"))
+            {
+                //when pressed the button will run SetTexture and grab the Skin Material and move the texture index in the direction  -1
+                SetTexture("Armour", -1);
+            }
+
+            //GUI Box or Lable on the left of the screen with the contence Skin
+            GUI.Button(new Rect(0.75f * scrW, scrH + order * (0.5f * scrH), 1f * scrW, 0.5f * scrH), "Armour");
+
+            //GUI button on the left of the screen with the contence >
+            if (GUI.Button(new Rect(1.75f * scrW, scrH + order * (0.5f * scrH), 0.5f * scrW, 0.5f * scrH), ">"))
+            {
+                //when pressed the button will run SetTexture and grab the Skin Material and move the texture index in the direction  1
+                SetTexture("Armour", 1);
+            }
+            #endregion
+
+            order++;
+
+            #region Clothes
+
+            if (GUI.Button(new Rect(0.25f * scrW, scrH + order * (0.5f * scrH), 0.5f * scrW, 0.5f * scrH), "<"))
+            {
+                //when pressed the button will run SetTexture and grab the Skin Material and move the texture index in the direction  -1
+                SetTexture("Clothes", -1);
+            }
+
+            //GUI Box or Lable on the left of the screen with the contence Skin
+            GUI.Button(new Rect(0.75f * scrW, scrH + order * (0.5f * scrH), 1f * scrW, 0.5f * scrH), "Clothes");
+
+            //GUI button on the left of the screen with the contence >
+            if (GUI.Button(new Rect(1.75f * scrW, scrH + order * (0.5f * scrH), 0.5f * scrW, 0.5f * scrH), ">"))
+            {
+                //when pressed the button will run SetTexture and grab the Skin Material and move the texture index in the direction  1
+                SetTexture("Clothes", 1);
+            }
+            #endregion
+
+            order++;
+
+            #region ResetAndRandom
+            //Random will feed a random amount to the direction 
+            if (GUI.Button(new Rect(0.25f * scrW, scrH + order * (0.5f * scrH), scrW * 1.5f, scrH * 0.5f), "RANDOM"))
+            {
+                SetTexture("Skin", Random.Range(0, skinMax - 1)); //generate random number
+                SetTexture("Hair", Random.Range(0, hairMax - 1));
+                SetTexture("Mouth", Random.Range(0, mouthMax - 1));
+                SetTexture("Eyes", Random.Range(0, eyesMax - 1));
+                SetTexture("Armour", Random.Range(0, armourMax - 1));
+                SetTexture("Clothes", Random.Range(0, clothesMax - 1));
+            }
+
+            //move down the screen with the int using ++ each grouping of GUI elements are moved using this
+            order++;
+
+            //reset will set all to 0 both use SetTexture
+            if (GUI.Button(new Rect(0.25f * scrW, scrH + order * (scrH * 0.5f), scrW * 1.5f, scrH * 0.5f), "RESET"))
+            {
+                SetTexture("Skin", skinIndex = 0);
+                SetTexture("Hair", hairIndex = 0);
+                SetTexture("Mouth", mouthIndex = 0);
+                SetTexture("Eyes", eyesIndex = 0);
+                SetTexture("Armour", armourIndex = 0);
+                SetTexture("Clothes", clothesIndex = 0);
+            }
+
+            #endregion
+
+            order++;
+
+            #region Character Name Save And Play
+            //name of our character equals a GUI TextField that holds our character name and limit of characters
+            charName = GUI.TextField(new Rect(0.25f * scrW, scrH + order * (scrH * 0.5f), scrW * 2f, scrH * 0.5f), charName, 16);
+
+            order++;
+
+            if (GUI.Button(new Rect(0.25f * scrW, scrH + order * (scrH * 0.5f), scrW * 2f, scrH * 0.5f), "Save & Play"))
+            {
+                //this button will run the save function and also load into the game level
+                Save();
+                SceneManager.LoadScene(2);
+            }
+            #endregion
+
+            order++;
+
+            #region ClassDrop
+            if (GUI.Button(new Rect(0.25f * scrW, scrH + order * (scrH * 0.5f), scrW * 2f, scrH * 0.5f), "ClassDropdown"))
+            {
+                //button flips drop status
+                showDrop = !showDrop;
+            }
+
+            order++;
+
+            if (showDrop)
+            {
+                //set up a scroll position
+                scrollArea = GUI.BeginScrollView(new Rect(0.25f * scrW, scrH + order * (scrH * 0.5f), scrW * 3f, scrH * 1f), scrollArea, new Rect(0, 0, scrW * 2f, scrH * 3.5f), false, true);
+
+                for (int i = 0; i < 8; i++)
+                {
+                    //set the temp value to the CharacterClass cast of int i
+                    CharacterClass temp = (CharacterClass)i;
+                    //make an entry for each class
+                    if (GUI.Button(new Rect(0, 0 + (scrH * 0.5f) * i, scrW * 3f, scrH * 0.5f), temp.ToString()))
+                    {
+                        GetClass(i);
+                    }
+                }
+                GUI.EndScrollView();
+            }
+
+
+            #endregion
+
+            order++;
+
+            if (GUI.Button(new Rect(0.25f * scrW, scrH + order * (0.5f * scrH), scrW * 1.5f, scrH * 0.5f), "CHANGE STATS"))
+            {
+                statPanel = true;
+            }
+
+            #region BackToMainButton
+
+            if (GUI.Button(new Rect(scrW * 0.25f, scrH * 8f, scrW, scrH * 0.5f), "Back"))
+            {
+                SceneManager.LoadScene(0);
+            }
+
+            #endregion
+
+            order = 0;
+
+            #region statDisplay
+            GUI.Label(new Rect(scrW * 3f, scrH + order * (scrH * 1f), scrW * 3f, scrH * 0.5f), "Strength: " + str);
+            GUI.Label(new Rect(scrW * 6f, scrH + order * (scrH * 1f), scrW * 3f, scrH * 0.5f), "Dexterity: " + dex);
+            order++;
+            GUI.Label(new Rect(scrW * 3f, scrH + order * (scrH * 1f), scrW * 3f, scrH * 0.5f), "Charisma: " + chr);
+            GUI.Label(new Rect(scrW * 6f, scrH + order * (scrH * 1f), scrW * 3f, scrH * 0.5f), "Constitution: " + con);
+            order++;
+            GUI.Label(new Rect(scrW * 3f, scrH + order * (scrH * 1f), scrW * 3f, scrH * 0.5f), "Intelligence: " + intel);
+            GUI.Label(new Rect(scrW * 6f, scrH + order * (scrH * 1f), scrW * 3f, scrH * 0.5f), "Wisdom: " + wis);
+            order++;
+            GUI.Label(new Rect(scrW * 3f, scrH + order * (scrH * 1f), scrW * 3f, scrH * 0.5f), "Points Left: " + points);
+            #endregion
+
+        } 
+        else
+        {
+            order = 0;
+            #region Strength
+
+            GUI.Label(new Rect(scrW * 6f, scrH + order * (scrH * 0.5f), scrW * 4f, scrH * 0.5f), "Strength");
+            order++;
+            if (GUI.Button(new Rect(6f * scrW, scrH + order * (.5f * scrH), 0.5f * scrW, 0.5f * scrH), "<"))
+            {
+                if (points >= 0)
+                {
+                    if (str-- >= strMin)
+                    {
+                        //take away a point of strenth and a stat point
+                        str--;
+                        points--;
+                    }
+                }
+                
+            }
+
+            GUI.Button(new Rect(6.75f * scrW, scrH + order * (0.5f * scrH), 1f * scrW, 0.5f * scrH), str.ToString());
+
+            if (GUI.Button(new Rect(7.75f * scrW, scrH + order * (0.5f * scrH), 0.5f * scrW, 0.5f * scrH), ">"))
+            {
+                if(points >= 0)
+                {
+                    str++;
+                    points--;
+                }
+            }
+
+            #endregion
+            
         }
 
-        //GUI Box or Lable on the left of the screen with the contence Skin
-        GUI.Button(new Rect(0.75f * scrW, scrH + order * (0.5f * scrH), 1f * scrW, 0.5f * scrH), "Skin");
 
-        //GUI button on the left of the screen with the contence >
-        if (GUI.Button(new Rect(1.75f * scrW, scrH + order * (0.5f * scrH), 0.5f * scrW, 0.5f * scrH), ">"))
-        {
-            //when pressed the button will run SetTexture and grab the Skin Material and move the texture index in the direction  1
-            SetTexture("Skin", 1);
-        }
-
-        //move down the screen with the int using ++ each grouping of GUI elements are moved using this
-        #endregion
-
-        order++;
-
-        #region Hair
-        if (GUI.Button(new Rect(0.25f * scrW, scrH + order * (0.5f * scrH), 0.5f * scrW, 0.5f * scrH), "<"))
-        {
-            //when pressed the button will run SetTexture and grab the Hair Material and move the texture index in the direction  -1
-            SetTexture("Hair", -1);
-        }
-
-        GUI.Button(new Rect(0.75f * scrW, scrH + order * (0.5f * scrH), 1f * scrW, 0.5f * scrH), "Hair");
-
-        if (GUI.Button(new Rect(1.75f * scrW, scrH + order * (0.5f * scrH), 0.5f * scrW, 0.5f * scrH), ">"))
-        {
-            //when pressed the button will run SetTexture and grab the Skin Material and move the texture index in the direction  1
-            SetTexture("Hair", 1);
-        }
-        #endregion
-
-        order++;
-
-        #region Mouth
-        if (GUI.Button(new Rect(0.25f * scrW, scrH + order * (0.5f * scrH), 0.5f * scrW, 0.5f * scrH), "<"))
-        {
-            //when pressed the button will run SetTexture and grab the Hair Material and move the texture index in the direction  -1
-            SetTexture("Mouth", -1);
-        }
-
-        GUI.Button(new Rect(0.75f * scrW, scrH + order * (0.5f * scrH), 1f * scrW, 0.5f * scrH), "Mouth");
-
-        if (GUI.Button(new Rect(1.75f * scrW, scrH + order * (0.5f * scrH), 0.5f * scrW, 0.5f * scrH), ">"))
-        {
-            //when pressed the button will run SetTexture and grab the Skin Material and move the texture index in the direction  1
-            SetTexture("Mouth", 1);
-        }
-        #endregion
-
-        order++;
-
-        #region Eyes
-        if (GUI.Button(new Rect(0.25f * scrW, scrH + order * (0.5f * scrH), 0.5f * scrW, 0.5f * scrH), "<"))
-        {
-            //when pressed the button will run SetTexture and grab the Hair Material and move the texture index in the direction  -1
-            SetTexture("Eyes", -1);
-        }
-
-        GUI.Button(new Rect(0.75f * scrW, scrH + order * (0.5f * scrH), 1f * scrW, 0.5f * scrH), "Eyes");
-
-        if (GUI.Button(new Rect(1.75f * scrW, scrH + order * (0.5f * scrH), 0.5f * scrW, 0.5f * scrH), ">"))
-        {
-            //when pressed the button will run SetTexture and grab the Skin Material and move the texture index in the direction  1
-            SetTexture("Eyes", 1);
-        }
-        #endregion
     }
 
-    //set up same things for Hair, Mouth and Eyes
-
-    #region Hair
-    //GUI button on the left of the screen with the contence <
-
-    //when pressed the button will run SetTexture and grab the Material and move the texture index in the direction  -1
-    //GUI Box or Lable on the left of the screen with the contence material Name
-    //GUI button on the left of the screen with the contence >
-    //when pressed the button will run SetTexture and grab the  Material and move the texture index in the direction  1
-    //move down the screen with the int using ++ each grouping of GUI elements are moved using this
-    #endregion
-    #region Mouth
-    //GUI button on the left of the screen with the contence <
-    //when pressed the button will run SetTexture and grab the Material and move the texture index in the direction  -1
-    //GUI Box or Lable on the left of the screen with the contence material Name
-    //GUI button on the left of the screen with the contence >
-    //when pressed the button will run SetTexture and grab the  Material and move the texture index in the direction  1
-    //move down the screen with the int using ++ each grouping of GUI elements are moved using this
-    #endregion
-    #region Eyes
-    //GUI button on the left of the screen with the contence <
-    //when pressed the button will run SetTexture and grab the Material and move the texture index in the direction  -1
-    //GUI Box or Lable on the left of the screen with the contence material Name
-    //GUI button on the left of the screen with the contence >
-    //when pressed the button will run SetTexture and grab the  Material and move the texture index in the direction  1
-    //move down the screen with the int using ++ each grouping of GUI elements are moved using this
-    #endregion
-    #region Random Reset
-    //create 2 buttons one Random and one Reset
-    //Random will feed a random amount to the direction 
-    //reset will set all to 0 both use SetTexture
-    //move down the screen with the int using ++ each grouping of GUI elements are moved using this
-    #endregion
-    #region Character Name and Save & Play
-    //name of our character equals a GUI TextField that holds our character name and limit of characters
-    //move down the screen with the int using ++ each grouping of GUI elements are moved using this
-
-    //GUI Button called Save and Play
-    //this button will run the save function and also load into the game level
     #endregion
 
+    #region SetBaseStats
+
+    public void GetClass(int index)
+    {
+        switch (index)
+        {
+            case 0:
+                charClass = CharacterClass.Barbarian;
+                SetBaseStats(charClass);
+                break;
+            case 1:
+                charClass = CharacterClass.Bard;
+                SetBaseStats(charClass);
+                break;
+            case 2:
+                charClass = CharacterClass.Druid;
+                SetBaseStats(charClass);
+                break;
+            case 3:
+                charClass = CharacterClass.Monk;
+                SetBaseStats(charClass);
+                break;
+            case 4:
+                charClass = CharacterClass.Paladin;
+                SetBaseStats(charClass);
+                break;
+            case 5:
+                charClass = CharacterClass.Ranger;
+                SetBaseStats(charClass);
+                break;
+            case 6:
+                charClass = CharacterClass.Sorcerer;
+                SetBaseStats(charClass);
+                break;
+            case 7:
+                charClass = CharacterClass.Warlock;
+                SetBaseStats(charClass);
+                break;
+
+        }
+    }
+
+    public void SetBaseStats(CharacterClass pickedClass)
+    {
+        switch (pickedClass)
+        {
+            case CharacterClass.Barbarian:
+                strMin = 12; dexMin = 8; chrMin = 6; conMin = 12; intelMin = 9; wisMin = 6;
+                str = strMin; dex = dexMin; chr = chrMin; con = conMin; intel = intelMin; wis = wisMin;
+                break;
+            case CharacterClass.Bard:
+                strMin = 8; dexMin = 8; chrMin = 12; conMin = 8; intelMin = 10; wisMin = 9;
+                str = strMin; dex = dexMin; chr = chrMin; con = conMin; intel = intelMin; wis = wisMin;
+                break;
+            case CharacterClass.Druid:
+                strMin = 10; dexMin = 8; chrMin = 7; conMin = 10; intelMin = 9; wisMin = 12;
+                str = strMin; dex = dexMin; chr = chrMin; con = conMin; intel = intelMin; wis = wisMin;
+                break;
+            case CharacterClass.Monk:
+                strMin = 10; dexMin = 10; chrMin = 8; conMin = 12; intelMin = 9; wisMin = 9;
+                str = strMin; dex = dexMin; chr = chrMin; con = conMin; intel = intelMin; wis = wisMin;
+                break;
+            case CharacterClass.Paladin:
+                strMin = 10; dexMin = 8; chrMin = 8; conMin = 10; intelMin = 9; wisMin = 8;
+                str = strMin; dex = dexMin; chr = chrMin; con = conMin; intel = intelMin; wis = wisMin;
+                break;
+            case CharacterClass.Ranger:
+                strMin = 8; dexMin = 10; chrMin = 8; conMin = 8; intelMin = 10; wisMin = 8;
+                str = strMin; dex = dexMin; chr = chrMin; con = conMin; intel = intelMin; wis = wisMin;
+                break;
+            case CharacterClass.Sorcerer:
+                strMin = 6; dexMin = 8; chrMin = 9; conMin = 8; intelMin = 12; wisMin = 12;
+                str = strMin; dex = dexMin; chr = chrMin; con = conMin; intel = intelMin; wis = wisMin;
+                break;
+            case CharacterClass.Warlock:
+                strMin = 8; dexMin = 6; chrMin = 6; conMin = 10; intelMin = 12; wisMin = 12;
+                str = strMin; dex = dexMin; chr = chrMin; con = conMin; intel = intelMin; wis = wisMin;
+                break;
+        }
+    }
+
+
     #endregion
+
+    #region AdjustStats
+
+
+
+    #endregion
+
 }
 
 public enum CharacterClass

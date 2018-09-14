@@ -599,9 +599,19 @@ MonoBehaviour:
   con: 0
   intel: 0
   wis: 0
+  strMin: 0
+  dexMin: 0
+  chrMin: 0
+  conMin: 0
+  intelMin: 0
+  wisMin: 0
   points: 10
   charClass: 0
   character: {fileID: 0}
+  scrollArea: {x: 0, y: 0}
+  dropIndex: 0
+  showDrop: 0
+  statPanel: 0
 --- !u!4 &581133542
 Transform:
   m_ObjectHideFlags: 0
