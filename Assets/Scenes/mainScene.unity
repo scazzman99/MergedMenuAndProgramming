@@ -379,6 +379,11 @@ Prefab:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 114072809608286496, guid: d42a78784564dbf40a3b7aac1a6bb9a3,
+        type: 2}
+      propertyPath: skin.Array.size
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4115085390148196, guid: d42a78784564dbf40a3b7aac1a6bb9a3, type: 2}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -421,6 +426,41 @@ Prefab:
       propertyPath: pauseMenu
       value: 
       objectReference: {fileID: 953292264}
+    - target: {fileID: 114072809608286496, guid: d42a78784564dbf40a3b7aac1a6bb9a3,
+        type: 2}
+      propertyPath: hairMax
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 114072809608286496, guid: d42a78784564dbf40a3b7aac1a6bb9a3,
+        type: 2}
+      propertyPath: skinMax
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 114072809608286496, guid: d42a78784564dbf40a3b7aac1a6bb9a3,
+        type: 2}
+      propertyPath: eyesMax
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 114072809608286496, guid: d42a78784564dbf40a3b7aac1a6bb9a3,
+        type: 2}
+      propertyPath: mouthMax
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 114072809608286496, guid: d42a78784564dbf40a3b7aac1a6bb9a3,
+        type: 2}
+      propertyPath: armourMax
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 114072809608286496, guid: d42a78784564dbf40a3b7aac1a6bb9a3,
+        type: 2}
+      propertyPath: clothesMax
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 114072809608286496, guid: d42a78784564dbf40a3b7aac1a6bb9a3,
+        type: 2}
+      propertyPath: characterRender
+      value: 
+      objectReference: {fileID: 894962698}
     m_RemovedComponents:
     - {fileID: 114900615678240660, guid: d42a78784564dbf40a3b7aac1a6bb9a3, type: 2}
   m_SourcePrefab: {fileID: 100100000, guid: d42a78784564dbf40a3b7aac1a6bb9a3, type: 2}
@@ -2417,6 +2457,11 @@ MeshFilter:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 887406555}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!137 &894962698 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 137551042387708478, guid: d42a78784564dbf40a3b7aac1a6bb9a3,
+    type: 2}
+  m_PrefabInternal: {fileID: 106144420}
 --- !u!1 &953292261
 GameObject:
   m_ObjectHideFlags: 0

@@ -57,56 +57,7 @@ public class CustomisationSet : MonoBehaviour
     private void Start()
     {
 
-        #region for loops to fill lists
-        //for loop looping from 0 to less than the max amount of skin textures we need
-        //creating a temp Texture2D that it grabs using Resources.Load from the Character File looking for Skin_#
-        //add our temp texture that we just found to the skin List
-        for (int i = 0; i < skinMax; i++)
-        {
-            Texture2D temp = Resources.Load("Character/Skin_" + i) as Texture2D;
-            skin.Add(temp);
-        }
-
-        //for loop looping from 0 to less than the max amount of hair textures we need
-        //creating a temp Texture2D that it grabs using Resources.Load from the Character File looking for Hair_#
-        //add our temp texture that we just found to the hair List
-        for (int i = 0; i < hairMax; i++)
-        {
-            Texture2D temp = Resources.Load("Character/Hair_" + i) as Texture2D;
-            hair.Add(temp);
-        }
-
-        //for loop looping from 0 to less than the max amount of mouth textures we need    
-        //creating a temp Texture2D that it grabs using Resources.Load from the Character File looking for Mouth_#
-        //add our temp texture that we just found to the mouth List
-        for (int i = 0; i < mouthMax; i++)
-        {
-            Texture2D temp = Resources.Load("Character/Mouth_" + i) as Texture2D;
-            mouth.Add(temp);
-        }
-
-        //for loop looping from 0 to less than the max amount of eyes textures we need
-        //creating a temp Texture2D that it grabs using Resources.Load from the Character File looking for Eyes_#
-        //add our temp texture that we just found to the eyes List 
-        for (int i = 0; i < eyesMax; i++)
-        {
-            Texture2D temp = Resources.Load("Character/Eyes_" + i) as Texture2D;
-            eyes.Add(temp);
-        }
-
-        for (int i = 0; i < clothesMax; i++)
-        {
-            Texture2D temp = Resources.Load("Character/Clothes_" + i) as Texture2D;
-            clothes.Add(temp);
-        }
-
-        for (int i = 0; i < armourMax; i++)
-        {
-            Texture2D temp = Resources.Load("Character/Armour_" + i) as Texture2D;
-            armour.Add(temp);
-        }
-
-        #endregion
+        GetTextures();
 
         //connect and find the SkinnedMeshRenderer thats in the scene to the variable we made for Renderer
         character = GameObject.Find("Mesh").GetComponent<SkinnedMeshRenderer>();
@@ -256,6 +207,7 @@ public class CustomisationSet : MonoBehaviour
     //SetString CharacterName
     public void Save()
     {
+        
         PlayerPrefs.SetInt("SkinIndex", skinIndex);
         PlayerPrefs.SetInt("HairIndex", hairIndex);
         PlayerPrefs.SetInt("MouthIndex", mouthIndex);
@@ -263,6 +215,13 @@ public class CustomisationSet : MonoBehaviour
         PlayerPrefs.SetInt("ArmourIndex", armourIndex);
         PlayerPrefs.SetInt("ClothesIndex", clothesIndex);
         PlayerPrefs.SetString("CharacterName", charName);
+        PlayerPrefs.SetString("CharacterClass", classes[classIndex]);
+        PlayerPrefs.SetInt("CharacterStrength", statVals[0]);
+        PlayerPrefs.SetInt("CharacterDexterity", statVals[1]);
+        PlayerPrefs.SetInt("CharacterCharisma", statVals[2]);
+        PlayerPrefs.SetInt("CharacterConstitution", statVals[3]);
+        PlayerPrefs.SetInt("CharacterIntelligence", statVals[4]);
+        PlayerPrefs.SetInt("CharacterWisdom", statVals[5]);
     }
     #endregion
 
@@ -435,13 +394,22 @@ public class CustomisationSet : MonoBehaviour
 
         if (GUI.Button(new Rect(0.25f * scrW, scrH + order * (scrH * 0.5f), scrW * 2f, scrH * 0.5f), "Save & Play"))
         {
-            //this button will run the save function and also load into the game level
-            Save();
-            SceneManager.LoadScene(2);
+            //only let you progress if all points are used
+            if (points == 0)
+            {
+                //this button will run the save function and also load into the game level
+                Save();
+                SceneManager.LoadScene(2);
+            }
         }
         #endregion
 
         order++;
+
+        if(GUI.Button(new Rect(0.25f * scrW, scrH + order * (scrH * 0.5f), scrW * 2f, scrH * 0.5f), "Back"))
+        {
+            SceneManager.LoadScene(0);
+        }
 
         /*
         #region ClassDrop
@@ -479,22 +447,25 @@ public class CustomisationSet : MonoBehaviour
 
         #region statDisplay
 
+        //Have set of buttons that let you go through classes. Upon switching get classes default stats and set points back to 10
         GUI.Button(new Rect(3.75f * scrW, scrH , scrW, 0.5f * scrH), "Class");
         if (classIndex > 0)
         {
             if (GUI.Button(new Rect(3.25f * scrW, scrH * 1.5f, 0.5f * scrW, 0.5f * scrH), "<"))
             {
                 classIndex--;
+                points = 10;
                 GetClass(classIndex);
             }
         }
         GUI.Button(new Rect(3.75f * scrW, scrH * 1.5f, 2 * scrW, 0.5f * scrH), classes[classIndex]);
 
-        if(classIndex < 8)
+        if(classIndex < 7)
         {
             if (GUI.Button(new Rect(5.75f * scrW, scrH * 1.5f, 0.5f * scrW, 0.5f * scrH), ">"))
             {
                 classIndex++;
+                points = 10;
                 GetClass(classIndex);
             }
         }
@@ -504,6 +475,7 @@ public class CustomisationSet : MonoBehaviour
         GUI.Button(new Rect(3.75f * scrW, scrH * 2f, 2 * scrW, 0.5f * scrH), "Points : " + points);
 
 
+        //Loop through to create buttons for each stat that increase, decrease and show the stat and its value
         for (int i = 0; i < 6; i++)
         {
             if (statVals[i] > minVals[i])
@@ -623,11 +595,56 @@ public class CustomisationSet : MonoBehaviour
 
     #endregion
 
-    #region AdjustStats
+    public void GetTextures()
+    {
+        //for loop looping from 0 to less than the max amount of skin textures we need
+        //creating a temp Texture2D that it grabs using Resources.Load from the Character File looking for Skin_#
+        //add our temp texture that we just found to the skin List
+        for (int i = 0; i < skinMax; i++)
+        {
+            Texture2D temp = Resources.Load("Character/Skin_" + i) as Texture2D;
+            skin.Add(temp);
+        }
 
+        //for loop looping from 0 to less than the max amount of hair textures we need
+        //creating a temp Texture2D that it grabs using Resources.Load from the Character File looking for Hair_#
+        //add our temp texture that we just found to the hair List
+        for (int i = 0; i < hairMax; i++)
+        {
+            Texture2D temp = Resources.Load("Character/Hair_" + i) as Texture2D;
+            hair.Add(temp);
+        }
 
+        //for loop looping from 0 to less than the max amount of mouth textures we need    
+        //creating a temp Texture2D that it grabs using Resources.Load from the Character File looking for Mouth_#
+        //add our temp texture that we just found to the mouth List
+        for (int i = 0; i < mouthMax; i++)
+        {
+            Texture2D temp = Resources.Load("Character/Mouth_" + i) as Texture2D;
+            mouth.Add(temp);
+        }
 
-    #endregion
+        //for loop looping from 0 to less than the max amount of eyes textures we need
+        //creating a temp Texture2D that it grabs using Resources.Load from the Character File looking for Eyes_#
+        //add our temp texture that we just found to the eyes List 
+        for (int i = 0; i < eyesMax; i++)
+        {
+            Texture2D temp = Resources.Load("Character/Eyes_" + i) as Texture2D;
+            eyes.Add(temp);
+        }
+
+        for (int i = 0; i < clothesMax; i++)
+        {
+            Texture2D temp = Resources.Load("Character/Clothes_" + i) as Texture2D;
+            clothes.Add(temp);
+        }
+
+        for (int i = 0; i < armourMax; i++)
+        {
+            Texture2D temp = Resources.Load("Character/Armour_" + i) as Texture2D;
+            armour.Add(temp);
+        }
+    }
 
 }
 
