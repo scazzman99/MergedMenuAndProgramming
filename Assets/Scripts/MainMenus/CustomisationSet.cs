@@ -55,7 +55,9 @@ public class CustomisationSet : MonoBehaviour
     #region Start
 
     private void Start()
-    {
+    {//make sure you can see and and freely move the cursor in this menu on reload
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
 
         GetTextures();
 
@@ -216,12 +218,11 @@ public class CustomisationSet : MonoBehaviour
         PlayerPrefs.SetInt("ClothesIndex", clothesIndex);
         PlayerPrefs.SetString("CharacterName", charName);
         PlayerPrefs.SetString("CharacterClass", classes[classIndex]);
-        PlayerPrefs.SetInt("CharacterStrength", statVals[0]);
-        PlayerPrefs.SetInt("CharacterDexterity", statVals[1]);
-        PlayerPrefs.SetInt("CharacterCharisma", statVals[2]);
-        PlayerPrefs.SetInt("CharacterConstitution", statVals[3]);
-        PlayerPrefs.SetInt("CharacterIntelligence", statVals[4]);
-        PlayerPrefs.SetInt("CharacterWisdom", statVals[5]);
+        
+        for(int i = 0; i < stats.Length; i++)
+        {
+            PlayerPrefs.SetInt(stats[i], statVals[i]);
+        }
     }
     #endregion
 

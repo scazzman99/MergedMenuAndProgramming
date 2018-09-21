@@ -21,13 +21,19 @@ public class CharHealthHandler : MonoBehaviour
     [Header("Attributes/Stats")]
 
     #region BaseStatModifiers
-    public int constitution;
+    //to get stats, call index that matches with stat names index
+    /*
     public int strength;
     public int dexterity;
+    public int charisma;
+    public int constitution;
     public int intelligence;
     public int wisdom;
-    public int charisma;
+    */
+
     public string playerClass;
+    public string[] stats;
+    public int[] statVals = new int[6];
     #endregion
 
 
@@ -86,13 +92,7 @@ public class CharHealthHandler : MonoBehaviour
 
     [Header("Texture lists and vars")]
     public Renderer characterRender;
-    public List<Texture2D> skin = new List<Texture2D>();
-    public List<Texture2D> hair = new List<Texture2D>();
-    public List<Texture2D> mouth = new List<Texture2D>();
-    public List<Texture2D> eyes = new List<Texture2D>();
-    public List<Texture2D> clothes = new List<Texture2D>();
-    public List<Texture2D> armour = new List<Texture2D>();
-    public CustomisationSet customisation;
+    
     public int hairMax, skinMax, eyesMax, mouthMax, armourMax, clothesMax;
 
     #endregion
@@ -105,12 +105,12 @@ public class CharHealthHandler : MonoBehaviour
     //connect the Character Controller to the controller variable
     private void Start()
     {
+        stats = new string[] { "Strength", "Dexterity", "Charisma", "Constitution", "Intelligence", "Wisdom" };
+        
         //get stats from player prefs and get hp, mp and stam values from them
-        GetSavedStats();
         SetStatValues();
-        //get and set textures for the player
-        GetTextures();
-        SetTextures();
+        
+       
         currentHP = maxHP;
         damageHP = maxHP;
         currentStamina = maxStamina;
@@ -277,23 +277,12 @@ public class CharHealthHandler : MonoBehaviour
     #region StatSetandCheckFunctions
 
 
-    private void GetSavedStats()
-    {
-        strength = PlayerPrefs.GetInt("CharacterStrength");
-        dexterity = PlayerPrefs.GetInt("CharacterDexterity");
-        charisma = PlayerPrefs.GetInt("CharacterCharisma");
-        constitution = PlayerPrefs.GetInt("CharacterConstitution");
-        intelligence = PlayerPrefs.GetInt("CharacterIntelligence");
-        wisdom = PlayerPrefs.GetInt("CharacterWisdom");
-        playerClass = PlayerPrefs.GetString("CharacterClass");
-       
-
-    }
+   
     private void SetStatValues()
     {
-        maxHP = 50f + 7 * constitution;
-        maxStamina = 50f + 7 * dexterity;
-        maxMana = 50f + 7 * wisdom;
+        maxHP = 50f + 7 * statVals[3]; //gets constitution
+        maxStamina = 50f + 7 * statVals[1]; //gets dexterity
+        maxMana = 50f + 7 * statVals[5]; //gets wisdom
     }
 
     private void CheckMana()
@@ -447,69 +436,6 @@ public class CharHealthHandler : MonoBehaviour
 
     #endregion
 
-    #region setTextures
-    private void SetTextures()
-    {
-        Material[] mats = characterRender.materials;
-        mats[1].mainTexture = skin[PlayerPrefs.GetInt("SkinIndex")];
-        mats[2].mainTexture = hair[PlayerPrefs.GetInt("HairIndex")];
-        mats[3].mainTexture = mouth[PlayerPrefs.GetInt("MouthIndex")];
-        mats[4].mainTexture = eyes[PlayerPrefs.GetInt("EyesIndex")];
-        mats[5].mainTexture = armour[PlayerPrefs.GetInt("ArmourIndex")];
-        mats[6].mainTexture = clothes[PlayerPrefs.GetInt("ClothesIndex")];
-    }
-
-    public void GetTextures()
-    {
-        //for loop looping from 0 to less than the max amount of skin textures we need
-        //creating a temp Texture2D that it grabs using Resources.Load from the Character File looking for Skin_#
-        //add our temp texture that we just found to the skin List
-        for (int i = 0; i < skinMax; i++)
-        {
-            Texture2D temp = Resources.Load("Character/Skin_" + i) as Texture2D;
-            skin.Add(temp);
-        }
-
-        //for loop looping from 0 to less than the max amount of hair textures we need
-        //creating a temp Texture2D that it grabs using Resources.Load from the Character File looking for Hair_#
-        //add our temp texture that we just found to the hair List
-        for (int i = 0; i < hairMax; i++)
-        {
-            Texture2D temp = Resources.Load("Character/Hair_" + i) as Texture2D;
-            hair.Add(temp);
-        }
-
-        //for loop looping from 0 to less than the max amount of mouth textures we need    
-        //creating a temp Texture2D that it grabs using Resources.Load from the Character File looking for Mouth_#
-        //add our temp texture that we just found to the mouth List
-        for (int i = 0; i < mouthMax; i++)
-        {
-            Texture2D temp = Resources.Load("Character/Mouth_" + i) as Texture2D;
-            mouth.Add(temp);
-        }
-
-        //for loop looping from 0 to less than the max amount of eyes textures we need
-        //creating a temp Texture2D that it grabs using Resources.Load from the Character File looking for Eyes_#
-        //add our temp texture that we just found to the eyes List 
-        for (int i = 0; i < eyesMax; i++)
-        {
-            Texture2D temp = Resources.Load("Character/Eyes_" + i) as Texture2D;
-            eyes.Add(temp);
-        }
-
-        for (int i = 0; i < clothesMax; i++)
-        {
-            Texture2D temp = Resources.Load("Character/Clothes_" + i) as Texture2D;
-            clothes.Add(temp);
-        }
-
-        for (int i = 0; i < armourMax; i++)
-        {
-            Texture2D temp = Resources.Load("Character/Armour_" + i) as Texture2D;
-            armour.Add(temp);
-        }
-    }
-    #endregion
 
 
     #region CoRoutines
