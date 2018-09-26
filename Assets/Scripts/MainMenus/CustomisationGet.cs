@@ -3,29 +3,28 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class CustomisationGet : MonoBehaviour {
+public class CustomisationGet : MonoBehaviour
+{
 
     [Header("Character")]
     public Renderer charMesh;
     public CharHealthHandler charH;
     public bool isPlayer;
     public int skinMax, hairMax, mouthMax, eyesMax, armourMax, clothesMax;
-    
-	// Use this for initialization
-	void Start () {
-        if(gameObject.tag == "Player")
+
+    // Use this for initialization
+    void Start()
+    {
+        if (gameObject.tag == "Player")
         {
             isPlayer = true;
-            
+
         }
         charMesh = gameObject.GetComponentInChildren<SkinnedMeshRenderer>();
         LoadTexture();
-        if (isPlayer)
-        {
-            SetStats();
-        }
+
     }
-	
+
 
     #region LoadTexture
     //check if playerprefs has a key (save)
@@ -33,6 +32,7 @@ public class CustomisationGet : MonoBehaviour {
     //if it does then load setTexture for everything
     public void LoadTexture()
     {
+        //if it is the player, load the customisation
         if (isPlayer)
         {
             if (!PlayerPrefs.HasKey("SkinIndex"))
@@ -46,8 +46,9 @@ public class CustomisationGet : MonoBehaviour {
             SetTexture("Eyes", PlayerPrefs.GetInt("EyesIndex"));
             SetTexture("Armour", PlayerPrefs.GetInt("ArmourIndex"));
             SetTexture("Clothes", PlayerPrefs.GetInt("ClothesIndex"));
-            gameObject.name = PlayerPrefs.GetString("CharacterName");
-        } else
+
+        }
+        else //if it is not the player, generate random customisation
         {
             SetTexture("Skin", Random.Range(0, skinMax - 1));
             SetTexture("Hair", Random.Range(0, hairMax - 1));
@@ -72,7 +73,7 @@ public class CustomisationGet : MonoBehaviour {
         //inside a switch statement that is swapped by the string name of our material
         int matIndex = 0;
         Texture2D tex = null;
-        
+
 
         #region Switch Material
 
@@ -117,7 +118,7 @@ public class CustomisationGet : MonoBehaviour {
 
         //outside our switch statement
         //index plus equals our direction
-     
+
         //Material array is equal to our characters material list
         Material[] mat = charMesh.materials;
         //our material arrays current material index's main texture is equal to our texture arrays current index
@@ -126,18 +127,8 @@ public class CustomisationGet : MonoBehaviour {
         charMesh.materials = mat;
         //create another switch that is goverened by the same string name of our material
         #endregion
-      
+
     }
     #endregion
 
-    public void SetStats()
-    {
-        int[] stats = charH.statVals;
-        string[] statNames = charH.stats;
-        for(int i = 0; i < statNames.Length; i++)
-        {
-            stats[i] = PlayerPrefs.GetInt(statNames[i]);
-        }
-        charH.statVals = stats;
-    }
 }

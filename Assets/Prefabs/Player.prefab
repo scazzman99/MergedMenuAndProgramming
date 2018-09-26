@@ -394,7 +394,7 @@ GameObject:
   - component: {fileID: 114582921387190762}
   - component: {fileID: 114881756968121880}
   - component: {fileID: 114146268448250082}
-  - component: {fileID: 114900615678240660}
+  - component: {fileID: 114512528771585786}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -1211,12 +1211,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isAlive: 0
   playerController: {fileID: 0}
-  constitution: 10
-  strength: 12
-  dexterity: 12
-  intelligence: 9
-  wisdom: 8
-  charisma: 7
+  playerName: 
+  playerClassName: 
+  playerClass: 0
+  classIndex: 0
+  stats: []
+  statVals: 000000000000000000000000000000000000000000000000
   maxHP: 0
   currentHP: 0
   damageHP: 0
@@ -1573,7 +1573,14 @@ MonoBehaviour:
     m_FixedHeight: 0
     m_StretchWidth: 1
     m_StretchHeight: 0
-  pauseMenu: {fileID: 114900615678240660}
+  pauseMenu: {fileID: 0}
+  characterRender: {fileID: 137551042387708478}
+  hairMax: 5
+  skinMax: 5
+  eyesMax: 6
+  mouthMax: 5
+  armourMax: 11
+  clothesMax: 11
 --- !u!114 &114146268448250082
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1611,6 +1618,26 @@ MonoBehaviour:
   minY: -60
   maxY: 60
   rotY: 0
+--- !u!114 &114512528771585786
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1694099468366912}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 832c9ea49c2503b45b0fb76f14b2fc6a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  charMesh: {fileID: 0}
+  charH: {fileID: 114072809608286496}
+  isPlayer: 1
+  skinMax: 5
+  hairMax: 5
+  mouthMax: 5
+  eyesMax: 6
+  armourMax: 11
+  clothesMax: 11
 --- !u!114 &114582921387190762
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1717,19 +1744,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   HPValue: 0
   time: 0
---- !u!114 &114900615678240660
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1694099468366912}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eaaf00a2c50778c4fb0e507253e235b2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  paused: 0
-  pauseCanvas: {fileID: 0}
 --- !u!137 &137551042387708478
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 1

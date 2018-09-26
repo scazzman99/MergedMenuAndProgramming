@@ -45,8 +45,10 @@ public class CustomisationSet : MonoBehaviour
     [Header("ChangeStat structs")]
     public string[] stats;
     public string[] classes;
+    //Values for the stats and the lowest value each can be
     public int[] statVals;
     public int[] minVals;
+    //tracks what class we are on
     public int classIndex = 0;
 
 
@@ -217,7 +219,7 @@ public class CustomisationSet : MonoBehaviour
         PlayerPrefs.SetInt("ArmourIndex", armourIndex);
         PlayerPrefs.SetInt("ClothesIndex", clothesIndex);
         PlayerPrefs.SetString("CharacterName", charName);
-        PlayerPrefs.SetString("CharacterClass", classes[classIndex]);
+        PlayerPrefs.SetInt("CharacterClass", classIndex);
         
         for(int i = 0; i < stats.Length; i++)
         {

@@ -30,8 +30,11 @@ public class CharHealthHandler : MonoBehaviour
     public int intelligence;
     public int wisdom;
     */
-
-    public string playerClass;
+    public string playerName;
+    public string playerClassName;
+    public CharacterClass playerClass;
+    //index to get the class of the character from enum
+    public int classIndex;
     public string[] stats;
     public int[] statVals = new int[6];
     #endregion
@@ -43,12 +46,12 @@ public class CharHealthHandler : MonoBehaviour
     public float maxHP;
     public float currentHP;
     public float damageHP;
-    public bool isHealing;
-    public bool isDamaging;
-    public bool isNaturalHeal;
-    public float tempHealingVal;
-    public float healRate;
-    public float naturalRegenRate = 5f;
+    public bool isHealing; //bool to check if we are healing
+    public bool isDamaging; //bool to check if we have taken damage
+    public bool isNaturalHeal; //bool to see if we are regening naturally
+    public float tempHealingVal; //heal value to be edited by potions etc
+    public float healRate; //rate at which a potion will heal us
+    public float naturalRegenRate = 5f; //natural regen rate
 
     #endregion
 
@@ -106,11 +109,14 @@ public class CharHealthHandler : MonoBehaviour
     private void Start()
     {
         stats = new string[] { "Strength", "Dexterity", "Charisma", "Constitution", "Intelligence", "Wisdom" };
-        
+
         //get stats from player prefs and get hp, mp and stam values from them
+        SetStats();
         SetStatValues();
-        
+
        
+
+        //set current hp to max hp, same with damage and stamina and mana etc
         currentHP = maxHP;
         damageHP = maxHP;
         currentStamina = maxStamina;
@@ -278,12 +284,7 @@ public class CharHealthHandler : MonoBehaviour
 
 
    
-    private void SetStatValues()
-    {
-        maxHP = 50f + 7 * statVals[3]; //gets constitution
-        maxStamina = 50f + 7 * statVals[1]; //gets dexterity
-        maxMana = 50f + 7 * statVals[5]; //gets wisdom
-    }
+   
 
     private void CheckMana()
     {
@@ -431,6 +432,34 @@ public class CharHealthHandler : MonoBehaviour
 
     }
 
+    //Inital setting and getting of stats
+    #region SetUpStats
+
+
+    public void SetStats()
+    {
+        
+        for (int i = 0; i < stats.Length; i++)
+        {
+            statVals[i] = PlayerPrefs.GetInt(stats[i]);
+        }
+        
+
+        playerName = PlayerPrefs.GetString("CharacterName");
+        classIndex = PlayerPrefs.GetInt("CharacterClass");
+        playerClass = (CharacterClass)classIndex;
+        playerClassName = playerClass.ToString();
+        gameObject.name = playerName;
+    }
+
+    private void SetStatValues()
+    {
+        maxHP = 50f + 7 * statVals[3]; //gets constitution
+        maxStamina = 50f + 7 * statVals[1]; //gets dexterity
+        maxMana = 50f + 7 * statVals[5]; //gets wisdom
+    }
+
+    #endregion
 
 
 
@@ -446,12 +475,6 @@ public class CharHealthHandler : MonoBehaviour
         damageHP -= 20 * Time.deltaTime;
     }
 
-    /* IEnumerator GiveSetHPAtInterval(float HP)
-     {
-         currentHP += HP;
-         yield return new WaitForSeconds(1);
-     }
-     */
 
      IEnumerator WaitForRegen()
      {
