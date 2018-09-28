@@ -73,6 +73,8 @@ public class CharHealthHandler : MonoBehaviour
     //level, max exp per level and players current exp
     public int playerLvl;
     public float maxExp, currentExp, expToGet, tempNewExp;
+    public bool canLevel;
+    public LevelUpMenu levelUpMenu;
 
     #endregion
 
@@ -110,6 +112,7 @@ public class CharHealthHandler : MonoBehaviour
     {
         stats = new string[] { "Strength", "Dexterity", "Charisma", "Constitution", "Intelligence", "Wisdom" };
 
+
         //get stats from player prefs and get hp, mp and stam values from them
         SetStats();
         SetStatValues();
@@ -122,8 +125,12 @@ public class CharHealthHandler : MonoBehaviour
         currentStamina = maxStamina;
         currentMana = maxMana;
         isAlive = true;
-        maxExp = 60;
+        maxExp = PlayerPrefs.GetInt("MaxExp", 60);
+        currentExp = PlayerPrefs.GetFloat("CurrentExp", 0f);
+        playerLvl = PlayerPrefs.GetInt("CharacterLevel", 0);
         playerController = GameObject.FindGameObjectWithTag("Player").GetComponent<CharacterController>();
+        //level up must be attached to the player
+        levelUpMenu = GetComponent<LevelUpMenu>();
     }
     #endregion
 
@@ -153,9 +160,12 @@ public class CharHealthHandler : MonoBehaviour
 
         if (currentExp >= maxExp)
         {
+            Debug.Log("LevelUp");
             currentExp -= maxExp;
             playerLvl++;
+            levelUpMenu.points += 5; 
             maxExp += 50;
+            canLevel = true;
         }
     }
 
@@ -196,7 +206,7 @@ public class CharHealthHandler : MonoBehaviour
     {
         float scrW = Screen.width / 16;
         float scrH = Screen.height / 9;
-        if (!pauseMenu.paused)
+        if (!pauseMenu.paused && !levelUpMenu.levelPause)
         {
             for (int x = 0; x < 16; x++)
             {
@@ -441,7 +451,8 @@ public class CharHealthHandler : MonoBehaviour
         
         for (int i = 0; i < stats.Length; i++)
         {
-            statVals[i] = PlayerPrefs.GetInt(stats[i]);
+            //load the stat if not there set to 10
+            statVals[i] = PlayerPrefs.GetInt(stats[i], 10);
         }
         
 
@@ -452,7 +463,7 @@ public class CharHealthHandler : MonoBehaviour
         gameObject.name = playerName;
     }
 
-    private void SetStatValues()
+    public void SetStatValues()
     {
         maxHP = 50f + 7 * statVals[3]; //gets constitution
         maxStamina = 50f + 7 * statVals[1]; //gets dexterity
@@ -483,7 +494,16 @@ public class CharHealthHandler : MonoBehaviour
          isNaturalHeal = true;
      }
      
-
+    public void Save()
+    {
+        for(int i = 0; i < statVals.Length; i++)
+        {
+            PlayerPrefs.SetInt(stats[i], statVals[i]);
+        }
+        PlayerPrefs.SetInt("CharacterLevel", playerLvl);
+        PlayerPrefs.SetFloat("MaxExp", maxExp);
+        PlayerPrefs.SetFloat("CurrentExp", currentExp);
+    }
     #endregion
 }
 
