@@ -206,7 +206,7 @@ public class CharHealthHandler : MonoBehaviour
     {
         float scrW = Screen.width / 16;
         float scrH = Screen.height / 9;
-        if (!pauseMenu.paused && !levelUpMenu.levelPause)
+        if (!PauseMenu.paused && !levelUpMenu.levelPause)
         {
             for (int x = 0; x < 16; x++)
             {

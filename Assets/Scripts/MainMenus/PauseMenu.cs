@@ -6,7 +6,8 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 [AddComponentMenu("Skyrim Revengence/Menu/PauseMenu")]
 
-public class PauseMenu : MonoBehaviour {
+public class PauseMenu : MonoBehaviour
+{
 
     public bool isOptions = false;
     public GameObject pauseMenu, settingsMenu;
@@ -20,9 +21,13 @@ public class PauseMenu : MonoBehaviour {
     public KeyCode holdingKey;
     public Text forwardTxt, backwardTxt, leftTxt, rightTxt, jumpTxt, crouchTxt, sprintTxt, interactTxt;
     private GameObject currentKey;
-    public Pause pauseF;
-	// Use this for initialization
-	void Start () {
+    public static bool paused;
+    public Canvas pauseCanvas;
+    public LevelUpMenu levelUpMenu;
+
+    // Use this for initialization
+    void Start()
+    {
         myKeys.Add("Forward", (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("Forward", "W")));
         myKeys.Add("Backward", (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("Backward", "S")));
         myKeys.Add("Left", (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("Left", "A")));
@@ -41,19 +46,67 @@ public class PauseMenu : MonoBehaviour {
         sprintTxt.text = myKeys["Sprint"].ToString();
         interactTxt.text = myKeys["Interact"].ToString();
 
-        pauseF = GetComponent<Pause>();
-
+        levelUpMenu = GameObject.FindGameObjectWithTag("Player").GetComponent<LevelUpMenu>();
+        Time.timeScale = 1;
     }
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+
+    // Update is called once per frame
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            TogglePause();
+        }
+    }
 
     public void ToggleOptions()
     {
+
         //dont have this equal anything or the bool will get ruined
         OptionToggle();
+    }
+
+    public void TogglePause()
+    {
+        if (!levelUpMenu.levelPause)
+        {
+            if (paused)
+            {
+                //if we are in the setings menu
+                if (isOptions)
+                {
+                    //toggle menus
+                    ToggleOptions();
+                }
+                if (paused && !Inventory.showInv)
+                {
+                    Time.timeScale = 1;
+                    paused = false; //with time scale back at 1 and the menu gone, the gmae will continue to play
+                    pauseCanvas.gameObject.SetActive(paused);
+                    //reset panels
+                    pauseMenu.SetActive(true);
+                    settingsMenu.SetActive(false);
+                    isOptions = false;
+                    Cursor.lockState = CursorLockMode.Locked;
+                    Cursor.visible = false;
+                    
+                }
+                else if (paused && Inventory.showInv)
+                {
+                    paused = false;
+                    pauseCanvas.gameObject.SetActive(false);
+                }
+            }
+            else
+            {
+                Time.timeScale = 0;
+                paused = true; //with time scale set to 0, we can pull up the pause menu and stop the world.
+                pauseCanvas.gameObject.SetActive(paused);
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
+            }
+
+        }
     }
 
     bool OptionToggle()
@@ -102,11 +155,11 @@ public class PauseMenu : MonoBehaviour {
         List<string> resOps = new List<string>();
         myResolutions = Screen.resolutions;
         resolutions.ClearOptions();
-        for(int i = 0; i < myResolutions.Length; i++)
+        for (int i = 0; i < myResolutions.Length; i++)
         {
             string option = myResolutions[i].width + "x" + myResolutions[i].height;
             resOps.Add(option);
-            if(myResolutions[i].Equals(Screen.currentResolution))
+            if (myResolutions[i].Equals(Screen.currentResolution))
             {
                 resIndex = i;
             }
@@ -130,15 +183,15 @@ public class PauseMenu : MonoBehaviour {
     public void ResumeGame()
     {
         Time.timeScale = 1;
-        pauseF.paused = false; //with time scale back at 1 and the menu gone, the gmae will continue to play
-        pauseF.pauseCanvas.gameObject.SetActive(pauseF.paused);
+        paused = false; //with time scale back at 1 and the menu gone, the gmae will continue to play
+        pauseCanvas.gameObject.SetActive(paused);
         GameObject.Find("PauseHandler").GetComponent<PauseMenu>().pauseMenu.SetActive(true);
         GameObject.Find("PauseHandler").GetComponent<PauseMenu>().settingsMenu.SetActive(false);
         GameObject.Find("PauseHandler").GetComponent<PauseMenu>().isOptions = false;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
-    
+
 
     public void ReturnToMain()
     {
@@ -152,12 +205,12 @@ public class PauseMenu : MonoBehaviour {
 
     private void OnGUI()
     {
-        if(currentKey != null)
+        if (currentKey != null)
         {
             Event e = Event.current;
             if (e.isKey)
             {
-                
+
                 myKeys[currentKey.name] = e.keyCode;
                 //get the text componenet of the the child of the pressed button
                 currentKey.transform.GetChild(0).GetComponent<Text>().text = e.keyCode.ToString();

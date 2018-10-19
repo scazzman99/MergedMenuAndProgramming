@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Pause : MonoBehaviour {
-
-    public bool paused;
+    //make pause var static so only one exists
+    //public static bool paused;
     public Canvas pauseCanvas;
     public LevelUpMenu levelUpMenu;
+    
 	// Use this for initialization
 	void Start () {
         Time.timeScale = 1; //sets the time scale to 1, so the game runs at 'regular' speed
@@ -14,6 +15,7 @@ public class Pause : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
+    /*
 	void Update () {
         //can't pause during level up screen
 
@@ -30,6 +32,10 @@ public class Pause : MonoBehaviour {
                     Cursor.lockState = CursorLockMode.Locked;
                     Cursor.visible = false;
                 }
+                else if(paused && Inventory.showInv){
+                    paused = false;
+                    pauseCanvas.gameObject.SetActive(false);
+                }
                 else
                 {
                     Time.timeScale = 0;
@@ -40,5 +46,6 @@ public class Pause : MonoBehaviour {
                 }
             }
         }
+        */
 	
 }
