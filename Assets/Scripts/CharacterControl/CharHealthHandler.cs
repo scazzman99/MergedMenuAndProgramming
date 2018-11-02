@@ -43,8 +43,8 @@ public class CharHealthHandler : MonoBehaviour
     [Header("Health")]
     #region Health
     //Plyaer current health and max health
-    public float maxHP;
-    public float currentHP;
+    public static float maxHP;
+    public static float currentHP;
     public float damageHP;
     public bool isHealing; //bool to check if we are healing
     public bool isDamaging; //bool to check if we have taken damage
@@ -120,8 +120,8 @@ public class CharHealthHandler : MonoBehaviour
        
 
         //set current hp to max hp, same with damage and stamina and mana etc
-        currentHP = maxHP;
-        damageHP = maxHP;
+        currentHP = maxHP - 5;
+        damageHP = currentHP;
         currentStamina = maxStamina;
         currentMana = maxMana;
         isAlive = true;
@@ -208,13 +208,13 @@ public class CharHealthHandler : MonoBehaviour
         float scrH = Screen.height / 9;
         if (!PauseMenu.paused && !levelUpMenu.levelPause)
         {
-            for (int x = 0; x < 16; x++)
+           /* for (int x = 0; x < 16; x++)
             {
                 for (int y = 0; y < 9; y++)
                 {
                     GUI.Box(new Rect(scrW * x, scrH * y, scrW, scrH), "");
                 }
-            }
+            }*/
 
             #region BackgroundRects
 

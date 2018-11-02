@@ -29,6 +29,13 @@ public class HPPotion : MonoBehaviour {
             time = 1;
             this.GetComponent<CharHealthHandler>().GetHealValue(HPValue, time); //gets the CharHealthHandler script from this object and sends Heal value into script to be calculated
         }
+
+        if (other.CompareTag("Fire"))
+        {
+            HPValue = -5f;
+            time = 1;
+            this.GetComponent<CharHealthHandler>().GetHealValue(HPValue, time);
+        }
     }
 
 

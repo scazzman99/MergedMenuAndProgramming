@@ -3,13 +3,15 @@ using System.Collections;
 //this script can be found in the Component section under the option Character Set Up 
 //CheckPoint
 
+
 public class CheckPoint : MonoBehaviour 
 {
     #region Variables
     [Header("CheckPoints")]
     GameObject checkpointCurrent;
-    [Header("Character Handler")]
-    public CharHealthHandler healthHandler;
+    [Header("HealthHandler")]
+    CharHealthHandler healthHandler;
+    
     #endregion
 
     #region Start
@@ -44,13 +46,13 @@ public class CheckPoint : MonoBehaviour
     private void Update()
     {
         //already checked for less than in other class
-        if(healthHandler.currentHP == 0)
+        if(CharHealthHandler.currentHP == 0)
         {
             //our transform.position is equal to that of the checkpoint
             transform.position = checkpointCurrent.transform.position;
 
             //set player hp to max
-            healthHandler.currentHP = healthHandler.maxHP;
+            CharHealthHandler.currentHP = CharHealthHandler.maxHP;
 
             //set player to alive and reactivate them
             healthHandler.isAlive = true;
