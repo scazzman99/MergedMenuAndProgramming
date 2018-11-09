@@ -14,17 +14,22 @@ public class Inventory : MonoBehaviour
     public Vector2 scr = Vector2.zero; //screen ratio 16:9
     public Vector2 scrollPos = Vector2.zero; //scroll bar position (in scrolling area not screen)
     string sortType = "";
+    public Transform dropLocation;
+    public Transform[] EquippedLocations;
+    public GameObject currentWeapon, currentHelm;
+    //0 = right hand //weapon
+    //1 = Head //helm
     #endregion
 
     void Start()
     {
         //added item from ID number
-        inv.Add(ItemData.CreateItem(0));
-        inv.Add(ItemData.CreateItem(1));
+        inv.Add(ItemData.CreateItem(3));
+        //inv.Add(ItemData.CreateItem(1));
         inv.Add(ItemData.CreateItem(201));
-        inv.Add(ItemData.CreateItem(100));
-        inv.Add(ItemData.CreateItem(401));
-        inv.Add(ItemData.CreateItem(300));
+        //inv.Add(ItemData.CreateItem(100));
+        //inv.Add(ItemData.CreateItem(401));
+        //inv.Add(ItemData.CreateItem(300));
         
 
         //debugging
@@ -134,7 +139,7 @@ public class Inventory : MonoBehaviour
 
                 #endregion
 
-                Debug.Log(sortType);
+                
 
 
                 DisplayInv(sortType);
@@ -194,9 +199,21 @@ public class Inventory : MonoBehaviour
                             GUI.Box(new Rect(7 * scr.x, 5f * scr.y, 8 * scr.x, 3 * scr.y), selectedItem.Name + "\n" + selectedItem.Description + "\nValue: " + selectedItem.Value
                                 + "\nArmour: " + selectedItem.Armour);
 
-                            if (GUI.Button(new Rect(12 * scr.x, 8.75f * scr.y, scr.x, 0.25f * scr.y), "Equip"))
-                            {
 
+
+                            if (currentHelm == null || selectedItem.Mesh != currentHelm.name)
+                            {
+                                if (GUI.Button(new Rect(12 * scr.x, 8.75f * scr.y, scr.x, 0.25f * scr.y), "Equip"))
+                                {
+                                    if (currentHelm != null)
+                                    {
+                                        Destroy(currentHelm);
+                                    }
+                                    currentHelm = Instantiate(Resources.Load("Prefabs/" + selectedItem.Mesh) as GameObject, EquippedLocations[1]);
+                                    //disable the item handler script for this item on pickup
+                                    currentHelm.GetComponent<ItemHandler>().enabled = false;
+                                    currentHelm.name = selectedItem.Mesh;
+                                } 
                             }
                             break;
 
@@ -205,8 +222,21 @@ public class Inventory : MonoBehaviour
                             GUI.Box(new Rect(7 * scr.x, 5f * scr.y, 8 * scr.x, 3 * scr.y), selectedItem.Name + "\n" + selectedItem.Description + "\nValue: " + selectedItem.Value
                                 + "\nDamage: " + selectedItem.Damage);
 
-                            if (GUI.Button(new Rect(12 * scr.x, 8.75f * scr.y, scr.x, 0.25f * scr.y), "Equip"))
+                            if (currentWeapon == null || selectedItem.Mesh != currentWeapon.name)
                             {
+
+                                if (GUI.Button(new Rect(12 * scr.x, 8.75f * scr.y, scr.x, 0.25f * scr.y), "Equip"))
+                                {
+
+                                    if (currentWeapon != null)
+                                    {
+                                        Destroy(currentWeapon);
+                                    }
+                                    currentWeapon = Instantiate(Resources.Load("Prefabs/" + selectedItem.Mesh) as GameObject, EquippedLocations[0]);
+                                    //disable the item handler script for this item on pickup
+                                    currentWeapon.GetComponent<ItemHandler>().enabled = false;
+                                    currentWeapon.name = selectedItem.Mesh;
+                                }
 
                             }
                             break;
@@ -225,8 +255,30 @@ public class Inventory : MonoBehaviour
                         if (GUI.Button(new Rect(13 * scr.x, 8.75f * scr.y, scr.x, 0.25f * scr.y), "Discard"))
                         {
                             //spawn item on ground
-                            inv.Remove(selectedItem);
-                            selectedItem = null;
+
+
+                            //destroy the weapon or helm on our body if we are discarding them
+                            if(currentWeapon !=null && selectedItem.Mesh == currentWeapon.name)
+                            {
+                                Destroy(currentWeapon);
+                            }
+                            else if (currentHelm != null && selectedItem.Mesh == currentHelm.name)
+                            {
+                                Destroy(currentHelm);
+                            }
+
+
+                            GameObject clone = Instantiate(Resources.Load("Prefabs/" + selectedItem.Mesh) as GameObject, dropLocation);
+                            clone.AddComponent<Rigidbody>().useGravity = true;
+                            clone.transform.SetParent(null);
+                            if(selectedItem.Amount > 1)
+                            {
+                                selectedItem.Amount--;
+                            } else
+                            {
+                                inv.Remove(selectedItem);
+                                selectedItem = null;
+                            }
                             return;
                         }
                     }

@@ -99,13 +99,7 @@ public class Item{
     //constructor to set default information
     public Item()
     {
-        //default information
-        _id = 0;
-        _name = "unknown";
-        _description = "???";
-        _value = 0;
-        _mesh = "MeshName";
-        _type = ItemTypes.Quest;
+        
     }
 
     //constructor to set specific values

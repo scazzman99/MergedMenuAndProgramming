@@ -4,7 +4,16 @@ using UnityEngine.SceneManagement; //for scene change interactivity
 using UnityEngine.UI; // interact with UI elements
 using UnityEngine.EventSystems; //for use of a controller (control events)
 using System.Collections.Generic; //needed to use lists well
+using System.Xml.Serialization;
+using System.Xml;
+using System.IO;
 
+public class OptionsData
+{
+    public float volSlider, brightSlider, ambientSlider;
+    public KeyCode forward, backward, left, right, jump, crouch, sprint, interact;
+    public bool fullScreen;
+}
 public class MenuHandler : MonoBehaviour
 {
     //these function will be public because we need to be able to access them from the inspector later
@@ -28,26 +37,43 @@ public class MenuHandler : MonoBehaviour
     public Dictionary<string, KeyCode> myKeyCodes;
     public List<KeyCode> keyCodeVals;
     public Text[] buttonTexts;
-    
+    [Header("SavingStuff")]
+    public OptionsData data = new OptionsData();
+    private string filePath, fileName = "Game Data";
+
     #endregion
 
-    private void Start()
+    private void Awake()
     {
         mainAudio = GameObject.Find("MainMusic").GetComponent<AudioSource>(); //do the same but for audio source
         dirLight = GameObject.FindGameObjectWithTag("DirLight").GetComponent<Light>(); //etc but found a tag instead
+        filePath = Application.dataPath + "/Data/" + fileName + ".xml";
+        if (File.Exists(filePath))
+        {
+            Load();
+        }
+        else
+        {
+            forward = KeyCode.W;
+            backward = KeyCode.S;
+            left = KeyCode.A;
+            right = KeyCode.D;
+            jump = KeyCode.Space;
+            crouch = KeyCode.LeftControl;
+            sprint = KeyCode.LeftShift;
+            interact = KeyCode.E;
+            
+        }
+    }
+    private void Start()
+    {
+        
+        
         myKeyCodes = new Dictionary<string, KeyCode>();
-
+        
 
         #region SetUpKeys
-        
-        forward = (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("Forward", "W")); //forward is where we will save the string. the second string must match KEYCODE!
-        backward = (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("Backward", "S"));//first part of these converts a string to an Enum
-        left = (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("Left", "A"));
-        right = (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("Right", "D"));        
-        jump = (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("Jump", "Space"));      
-        crouch = (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("Crouch", "LeftControl"));       
-        sprint = (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("Sprint", "LeftShift"));       
-        interact = (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("Interact", "E"));
+
         
 
         keyCodeVals.Add(forward);
@@ -232,6 +258,7 @@ public class MenuHandler : MonoBehaviour
                 holdingKey = keyCodeVals[index]; //set holding key to our keycode
                 keyCodeVals[index] = KeyCode.None; //set our key code in the list to none
                 buttonTexts[index].text = keyCodeVals[index].ToString(); //set the button text to the string of our new keycode
+                
             }
         }
     }
@@ -239,14 +266,7 @@ public class MenuHandler : MonoBehaviour
     //reinitialises all keybinds and associated structures to the default state
     public void DefaultKeyBinds()
     {
-        PlayerPrefs.SetString("Forward", KeyCode.W.ToString());
-        PlayerPrefs.SetString("Backward", KeyCode.S.ToString());
-        PlayerPrefs.SetString("Left", KeyCode.A.ToString());
-        PlayerPrefs.SetString("Right", KeyCode.S.ToString());
-        PlayerPrefs.SetString("Jump", KeyCode.Space.ToString());
-        PlayerPrefs.SetString("Crouch", KeyCode.LeftControl.ToString());
-        PlayerPrefs.SetString("Sprint", KeyCode.LeftShift.ToString());
-        PlayerPrefs.SetString("Interact", KeyCode.E.ToString());
+        
 
         keyCodeVals[0] = KeyCode.W;
         keyCodeVals[1] = KeyCode.S;
@@ -264,21 +284,60 @@ public class MenuHandler : MonoBehaviour
             buttonTexts[i].text = keyCodeVals[i].ToString(); //intialises the buttons text as the loaded controls as they are the same length
         }
 
+        //save data
+        Save();
 
     }
 
-    //saves custom keybinds
+    //saves custom keybinds & OPTIONS
+
     public void Save()
     {
-        PlayerPrefs.SetString("Forward", keyCodeVals[0].ToString()); //file name then the value it will hold!
-        PlayerPrefs.SetString("Backward", keyCodeVals[1].ToString());
-        PlayerPrefs.SetString("Left", keyCodeVals[2].ToString());
-        PlayerPrefs.SetString("Right", keyCodeVals[3].ToString());
-        PlayerPrefs.SetString("Jump", keyCodeVals[4].ToString());
-        PlayerPrefs.SetString("Crouch", keyCodeVals[5].ToString());
-        PlayerPrefs.SetString("Sprint", keyCodeVals[6].ToString());
-        PlayerPrefs.SetString("Interact", keyCodeVals[7].ToString());
+        
 
+        data.volSlider = volSlider.value;
+        data.brightSlider = brightSlider.value;
+        data.ambientSlider = ambientSlider.value;
+        data.forward = myKeyCodes["ForwardButton"];
+        data.backward = myKeyCodes["BackwardButton"];
+        data.left = myKeyCodes["LeftButton"];
+        data.right = myKeyCodes["RightButton"];
+        data.jump = myKeyCodes["JumpButton"];
+        data.crouch = myKeyCodes["CrouchButton"];
+        data.sprint = myKeyCodes["SprintButton"];
+        data.interact = myKeyCodes["InteractButton"];
+
+        var serializer = new XmlSerializer(typeof(OptionsData));
+
+        using (var stream = new FileStream(filePath, FileMode.Create))
+        {
+            serializer.Serialize(stream, data);
+        }
+    }
+
+    public void Load()
+    {
+        var serializer = new XmlSerializer(typeof(OptionsData));
+
+        using (var stream = new FileStream(filePath, FileMode.Open))
+        {
+
+            data = serializer.Deserialize(stream) as OptionsData;
+        }
+
+        forward = data.forward;
+        backward = data.backward;
+        left = data.left;
+        right = data.right;
+        jump = data.jump;
+        crouch = data.crouch;
+        sprint = data.sprint;
+        interact = data.interact;
+
+        mainAudio.volume = data.volSlider;
+        dirLight.intensity = data.brightSlider;
+        RenderSettings.ambientIntensity = data.ambientSlider;
+        Screen.fullScreen = data.fullScreen;
 
     }
 

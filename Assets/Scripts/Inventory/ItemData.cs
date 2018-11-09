@@ -23,7 +23,7 @@ public static class ItemData
         switch (ItemID)
         {
             #region consumable 0-99
-            case 0:
+            case 3:
                 name = "Apple";
                 description = "Munchies and Crunchies";
                 value = 5;

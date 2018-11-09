@@ -29,6 +29,7 @@ public class ItemHandler : MonoBehaviour {
                     break;
                 }
             }
+            Debug.Log(found);
 
             if (found == 1)
             {
